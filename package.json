@@ -1,0 +1,30 @@
+{
+  "name": "tales",
+  "version": "0.1.0",
+  "description": "Modern backend framework, inspired by Ruby on Rails",
+  "main": "index.js",
+  "bin": {
+    "tales": "packages/hapi-tales/bin/server.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/simplesmiler/tales.git"
+  },
+  "keywords": [
+    "modern",
+    "backend",
+    "framework",
+    "rails",
+    "hapi",
+    "express"
+  ],
+  "author": "Denis Karabaza <denis.karabaza@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/simplesmiler/tales/issues"
+  },
+  "homepage": "https://github.com/simplesmiler/tales#readme"
+}

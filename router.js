@@ -1,0 +1,211 @@
+const path = require('path');
+
+const _ = require('lodash');
+const inflect = require('inflect');
+
+module.exports = {
+  get, post, put, patch, del, // @NOTE: low-level routes
+  scope, resource, resources, // @NOTE: high-level routes
+  $walk, // @NOTE: utils
+};
+
+// == @SECTION: low-level routes == //
+
+function get(name, options) {
+  return $route('get', name, options);
+}
+
+function post(name, options) {
+  return $route('post', name, options);
+}
+
+function put(name, options) {
+  return $route('put', name, options);
+}
+
+function patch(name, options) {
+  return $route('patch', name, options);
+}
+
+function del(name, options) {
+  return $route('delete', name, options);
+}
+
+
+
+// == @SECTION: high-level routes == //
+
+function scope(name, options, children) {
+  return $route('scope', name, options, children);
+}
+
+const RESOURCE_ACTIONS = ['new', 'create', 'show', 'edit', 'update', 'destroy'];
+function resource(name, options, children) {
+  let enabled = $enabledActions(name, options, children, RESOURCE_ACTIONS);
+  return $route('resource', name, options, children, _.compact([
+    // @NOTE: singleton does not have index action
+    // @NOTE: singleton actions do not have distinction between member/collection
+    enabled.new && get('new', { action: 'new' }),
+    enabled.create && post('/', { action: 'create' }),
+    enabled.show && get('/', { action: 'show' }),
+    enabled.edit && get('edit', { action: 'edit' }),
+    enabled.update && put('/', { action: 'update' }),
+    enabled.update && patch('/', { action: 'update' }),
+    enabled.destroy && del('/', { action: 'destroy' }),
+  ]));
+}
+
+const RESOURCES_ACTIONS = ['index', 'new', 'create', 'show', 'edit', 'update', 'destroy'];
+function resources(name, options, children) {
+  let enabled = $enabledActions(name, options, children, RESOURCES_ACTIONS);
+  return $route('resources', name, options, children, _.compact([
+    enabled.index && get('/', { collection: true, action: 'index' }),
+    enabled.new && get(`new`, { collection: true, action: 'new' }),
+    enabled.create && post('/', { collection: true, action: 'create' }),
+    enabled.show && get('/', { action: 'show' }),
+    enabled.edit && get('edit', { action: 'edit' }),
+    enabled.update && put('/', { action: 'update' }),
+    enabled.update && patch('/', { action: 'update' }),
+    enabled.destroy && del('/', { action: 'destroy' }),
+  ]));
+}
+
+
+
+// == @SECTION: utils == //
+
+function $walk(routes, fn) {
+  for (let route of routes) {
+    iterate(route, fn);
+  }
+
+  function iterate(currentRoute, fn, basepath, resourceRoute) {
+    if (['get', 'post', 'put', 'patch', 'delete'].includes(currentRoute.type)) {
+      let name = _.get(resourceRoute, 'name') || null;
+      let singular = name ? inflect.singularize(name) : null;
+      let plural = name ? inflect.pluralize(name) : null;
+
+      let controller = _.get(currentRoute, 'options.controller') || _.get(resourceRoute, 'options.controller') || plural;
+      let model = _.get(currentRoute, 'options.model') || _.get(resourceRoute, 'options.model') || singular;
+      let action = _.get(currentRoute, 'options.action') || currentRoute.name;
+
+      let method = currentRoute.type;
+      let path = '/' + joinSegments(basepath, currentRoute.name);
+
+      fn({
+        method, path, // @NOTE: routing
+        controller, action, model, // @NOTE: processing
+      });
+    }
+
+    else if (['resource', 'resources'].includes(currentRoute.type)) {
+      let name = currentRoute.name || null;
+      let singular = name ? inflect.singularize(name) : null;
+
+      for (let childRoute of currentRoute.children) {
+        let memberSegment = '/';
+        if (currentRoute.type == 'resources' && !_.get(childRoute, 'options.collection')) {
+          memberSegment = `/{${singular}Id}`; // @TODO: abstract away route syntax
+        }
+        let path = joinSegments(basepath, currentRoute.name, memberSegment);
+        iterate(childRoute, fn, path, currentRoute);
+      }
+    }
+
+    else if (['scope'].includes(currentRoute.type)) {
+      let path = joinSegments(basepath, currentRoute.name);
+      for (let childRoute of currentRoute.children) {
+        iterate(childRoute, fn, path, resourceRoute);
+      }
+    }
+
+    else {
+      throw new Error(`Unexpected situation: unknown route type ${currentRoute.type}`);
+    }
+  }
+}
+
+
+
+// == @SECTION: implementation == //
+
+function $route(type, name, options, children, extraChildren) {
+  [name, options, children] = $params(name, options, children);
+
+  let route = { type };
+  if (name) route.name = name;
+  if (options) route.options = options;
+  if (!_.isEmpty(children) || !_.isEmpty(extraChildren)) {
+    route.children = _.concat(_.toArray(children), _.toArray(extraChildren));
+  }
+
+  return route;
+}
+
+function $enabledActions(name, options, children, actions) {
+  [name, options, children] = $params(name, options, children);
+
+  let only = _.compact(_.castArray(_.get(options, 'only', actions)));
+  let except = _.compact(_.castArray(_.get(options, 'except')));
+  let enabled = _.difference(only, except);
+
+  let index = {};
+  for (let action of only) {
+    index[action] = _.includes(enabled, action);
+  }
+
+  return index;
+}
+
+function $params(name, options, children) {
+  if (children == undefined) {
+    if (_.isArray(options)) {
+      children = options;
+      options = undefined;
+    }
+    else if (_.isArray(name)) {
+      children = name;
+      name = undefined;
+    }
+  }
+
+  if (options == undefined) {
+    if (_.isObject(name)) {
+      options = name;
+      name = undefined;
+    }
+  }
+
+  if (name == undefined) {
+    name = '/';
+  }
+
+  return [name, options, children];
+}
+
+function joinSegments(...segments) {
+  segments = _(segments)
+    .map(segment => {
+      if (segment == null) {
+        return '';
+      }
+
+      segment = String(segment);
+
+      while (segment[segment.length - 1] == '/') {
+        segment = segment.slice(0, -1);
+      }
+
+      while (segment[0] == '/') {
+        segment = segment.slice(1);
+      }
+
+      return segment;
+    })
+    .filter(segment => {
+      return segment.trim() != '';
+    })
+    .value();
+
+  return segments.join('/');
+}
