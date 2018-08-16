@@ -1,6 +1,6 @@
 const convertRoutes = require('./convert-routes');
 const _ = require('lodash');
-const Tales = require('../tales');
+const Tales = require('../..');
 
 module.exports = {
 
