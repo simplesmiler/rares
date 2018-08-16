@@ -7,6 +7,10 @@ const Sequelize = require('sequelize');
 
 module.exports = class Tales {
 
+  static get Sequelize() {
+    return Sequelize;
+  }
+
   static get Controller() {
     return require('./controller');
   }
