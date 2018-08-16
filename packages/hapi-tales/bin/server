@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const Hapi = require('hapi');
 
 async function main() {
