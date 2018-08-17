@@ -1,2 +1,6 @@
+# Dev
 node_modules
 package-lock.json
+
+# IDEA
+.idea
