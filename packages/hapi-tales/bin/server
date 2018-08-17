@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
-const Hapi = require('hapi');
+module.exports = async function() {
+  const Hapi = require('hapi');
 
-async function main() {
   const server = new Hapi.Server({
     host: process.env.HOST || 'localhost',
     port: process.env.PORT || 3000,
@@ -14,8 +14,15 @@ async function main() {
     require('..'),
   ]);
 
+  console.log(`Starting the server...`);
   await server.start();
   console.log(`Server running at: ${server.info.uri}`);
-}
 
-main().catch(console.error);
+  await new Promise(resolve => process.on('SIGINT', resolve));
+
+  console.log(`Stopping the server...`);
+  await server.stop({ timeout: 10000 });
+  console.log(`Server stopped`);
+
+  return server;
+};

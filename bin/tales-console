@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
-const REPL = require('repl');
-const Tales = require('..');
+module.exports = async function() {
+  const REPL = require('repl');
+  const Tales = require('..');
 
-async function main() {
   let App = await Tales.create();
 
   // @REFERENCE: https://github.com/balderdashy/sails/blob/v1.0.0-41/bin/sails-console.js
@@ -20,21 +20,15 @@ async function main() {
     terminal: true,
   });
 
+  repl.context.Tales = Tales;
   repl.context.App = App;
 
-  return await new Promise(async function(resolve, reject) {
+  await new Promise(function(resolve, reject) {
     // Bind a one-time-use handler that will run when the REPL instance emits its "exit" event.
     repl.once('exit', function(err) {
       err ? reject(err) : resolve();
     });
   });
-}
 
-main()
-  .then(function() {
-    process.exit(0);
-  })
-  .catch(function(err) {
-    console.error(err);
-    process.exit(1);
-  });
+  return true;
+};
