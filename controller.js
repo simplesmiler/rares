@@ -1,6 +1,7 @@
 const _ = require('lodash');
 const Boom = require('boom');
 const inflect = require('inflect');
+const Response = require('./response');
 
 module.exports = class Controller {
 
@@ -185,12 +186,19 @@ module.exports = class Controller {
   }
 
   async $run() {
+    let response;
     try {
-      return await this.$runCallbacks(this.constructor.$callbacks);
+      response = await this.$runCallbacks(this.constructor.$callbacks);
     }
     catch (err) {
-      return await this.$runRescue(this.constructor.$rescues, err);
+      response = await this.$runRescue(this.constructor.$rescues, err);
     }
+
+    return this.$response(response);
+  }
+
+  $response(value, opts) {
+    return new Response(value, opts);
   }
 
   // @SECTION: session

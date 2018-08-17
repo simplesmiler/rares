@@ -50,10 +50,15 @@ module.exports = function convert(server, App) {
         let params = _.defaults(null, request.params, query, request.payload);
 
         let controller = new ControllerClass({
+          // @NOTE: generic application stuff
           $tales: Tales,
           $app: App,
+
+          // @NOTE: hapi-specific request stuff
           $server: server,
           $request: request,
+
+          // @NOTE: generic request stuff
           $params: params,
           $model: modelName,
           $controller: controllerName,
@@ -62,10 +67,26 @@ module.exports = function convert(server, App) {
 
         try {
           let result = await controller.$run();
-          if (result === undefined) {
-            throw new Error(`Action '${actionName}' of controller '${controllerName}' returned no result and did not throw an error`);
+          let response = h.response(result.value);
+
+          let status = _.get(result.opts, 'status');
+          if (status != undefined) {
+            response.code(status);
           }
-          return result;
+
+          let type = _.get(result.opts, 'type');
+          if (type != undefined) {
+            response.type(type);
+          }
+
+          let headers = _.get(result.opts, 'headers');
+          if (headers != undefined) {
+            for (let name of _.keys(headers)) {
+              response.header(name, headers[name]);
+            }
+          }
+
+          return response;
         }
 
         catch (err) {
