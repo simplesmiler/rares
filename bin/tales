@@ -3,6 +3,7 @@
 async function main() {
   const commands = ['dev', 'console'];
   const command = process.argv[2];
+  const args = process.argv.slice(3);
 
   if (!command || !commands.includes(command)) {
     // @TODO: display usage
@@ -10,7 +11,7 @@ async function main() {
     return false;
   }
 
-  return await require('./tales-' + command)();
+  return await require('./tales-' + command)(args);
 }
 
 main()
