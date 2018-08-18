@@ -125,7 +125,7 @@ module.exports = class Tales {
     // == @SECTION: run application hook == //
 
     try {
-      await require(path.resolve(this.config.dir, 'config/application')).call(this);
+      await require(path.resolve(this.config.dir, 'config/application'))(this, Tales);
     }
     catch (err) {
       console.warn(`Failed to require config/application.js file, continuing without it`);
@@ -134,7 +134,7 @@ module.exports = class Tales {
     // == @SECTION: run environment hook == //
 
     try {
-      await require(path.resolve(this.config.dir, 'config/environments', this.env)).call(this);
+      await require(path.resolve(this.config.dir, 'config/environments', this.env))(this, Tales);
     }
     catch (err) {
       console.warn(`Failed to require config/environments/${this.env}.js file, continuing without it`);
@@ -143,7 +143,7 @@ module.exports = class Tales {
     // == @SECTION: setup loader == //
 
     this.Load = name => {
-      return require(path.resolve(this.config.dir, 'app', name));
+      return require(path.resolve(this.config.dir, 'app', name))(this, Tales);
     };
 
     // == @SECTION: globals = //
@@ -177,7 +177,7 @@ module.exports = class Tales {
     // == @SECTION: routes == //
 
     try {
-      this.routes = await require(path.resolve(this.config.dir, 'config/routes')).call(this);
+      this.routes = await require(path.resolve(this.config.dir, 'config/routes'))(this, Tales);
     }
     catch (err) {
       throw new Error('Failed to require config/routes.js file, can not continue without it');
