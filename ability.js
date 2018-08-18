@@ -10,17 +10,17 @@ module.exports = class Ability {
     for (const entry of this.$queue) {
       const entryActions = _.castArray(_.get(entry, 'action', []));
       const actionMatches = _.some(entryActions, entryAction => {
-        return entryAction == 'manage'
-          || entryAction == 'crud' && ['create', 'read', 'update', 'destroy'].includes(action)
-          || entryAction == action;
+        return entryAction === 'manage'
+          || entryAction === 'crud' && ['create', 'read', 'update', 'destroy'].includes(action)
+          || entryAction === action;
       });
 
       if (!actionMatches) continue;
 
       const entrySubjects = _.castArray(_.get(entry, 'subject', []));
       const subjectMatches = _.some(entrySubjects, entrySubject => {
-        return entrySubject == 'all' // covers wildcard
-          || entrySubject == subject // covers model -> model and string -> string
+        return entrySubject === 'all' // covers wildcard
+          || entrySubject === subject // covers model -> model and string -> string
           || _.isFunction(entrySubject) && subject instanceof entrySubject; // covers model -> record
       });
 

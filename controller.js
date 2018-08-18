@@ -43,10 +43,10 @@ module.exports = class Controller {
   static $makeCallbackOpts(type, ...args) {
     let opts;
 
-    if (args.length == 1) {
+    if (args.length === 1) {
       opts = _.isPlainObject(args[0]) ? _.extend(null, args[0]) : { handler: args[0] };
     }
-    else if (args.length == 2) {
+    else if (args.length === 2) {
       opts = _.extend(null, args[1], { handler: args[0] });
     }
 
@@ -96,16 +96,16 @@ module.exports = class Controller {
       const except = _.castArray(_.get(callback.opts, 'except', []));
       if (!_.isEmpty(except) && _.includes(except, this.$action)) continue;
 
-      if (callback.type == 'before') {
+      if (callback.type === 'before') {
         const handler = this.$getBoundHandler(callback.opts.handler);
         await handler(...callback.opts.args);
       }
 
-      else if (callback.type == 'after') {
+      else if (callback.type === 'after') {
         back.push(callback);
       }
 
-      else if (callback.type == 'around') {
+      else if (callback.type === 'around') {
         const handler = this.$getBoundHandler(callback.opts.handler);
 
         runAction = false;
@@ -121,7 +121,7 @@ module.exports = class Controller {
       }
     }
 
-    if (runAction && front.length == 0) {
+    if (runAction && front.length === 0) {
       const actionFn = this[this.$action];
       if (!actionFn) {
         throw new Error(`No action '${this.$action}' present on controller '${this.$controller}'`);
@@ -203,6 +203,7 @@ module.exports = class Controller {
 
   // @SECTION: session
 
+  /* eslint-disable no-unused-vars */
   async $store(key, value) {
     throw new Error('Controller method $store should have been overwritten, but was not');
   }
@@ -214,6 +215,7 @@ module.exports = class Controller {
   async $clear(key) {
     throw new Error('Controller method $clear should have been overwritten, but was not');
   }
+  /* eslint-enable no-unused-vars */
 
   // @SECTION: authentication
 
@@ -356,27 +358,27 @@ module.exports = class Controller {
 
     // @TODO: add status codes to blueprinted actions
 
-    if (this.$action == 'index') {
+    if (this.$action === 'index') {
       return { [plural]: this[plural] };
     }
-    else if (this.$action == 'new') {
+    else if (this.$action === 'new') {
       return { [singular]: this[singular] };
     }
-    else if (this.$action == 'create') {
+    else if (this.$action === 'create') {
       await this[singular].save();
       return { [singular]: this[singular] };
     }
-    else if (this.$action == 'show') {
+    else if (this.$action === 'show') {
       return { [singular]: this[singular] };
     }
-    else if (this.$action == 'edit') {
+    else if (this.$action === 'edit') {
       return { [singular]: this[singular] };
     }
-    else if (this.$action == 'update') {
+    else if (this.$action === 'update') {
       await this[singular].update(this.$params[singular]);
       return { [singular]: this[singular] };
     }
-    else if (this.$action == 'destroy') {
+    else if (this.$action === 'destroy') {
       await this[singular].destroy();
       return null;
     }

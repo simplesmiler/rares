@@ -70,17 +70,17 @@ module.exports = function convert(server, App) {
           const response = h.response(result.value);
 
           const status = _.get(result.opts, 'status');
-          if (status != undefined) {
+          if (status != null) {
             response.code(status);
           }
 
           const type = _.get(result.opts, 'type');
-          if (type != undefined) {
+          if (type != null) {
             response.type(type);
           }
 
           const headers = _.get(result.opts, 'headers');
-          if (headers != undefined) {
+          if (headers != null) {
             for (const name of _.keys(headers)) {
               response.header(name, headers[name]);
             }
@@ -100,9 +100,9 @@ module.exports = function convert(server, App) {
             throw Boom.boomify(err, { statusCode: 404 });
           }
           else if (err instanceof Sequelize.ValidationError) {
-            err = Boom.boomify(err, { statusCode: 422 });
-            err.output.payload.errors = _.map(err.errors, _.partialRight(_.pick, ['message', 'type', 'path']));
-            throw err;
+            const newErr = Boom.boomify(err, { statusCode: 422 });
+            newErr.output.payload.errors = _.map(newErr.errors, _.partialRight(_.pick, ['message', 'type', 'path']));
+            throw newErr;
           }
           else if (err instanceof Sequelize.ForeignKeyConstraintError) {
             throw Boom.boomify(err, { statusCode: 409 });

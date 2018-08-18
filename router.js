@@ -1,5 +1,3 @@
-const path = require('path');
-
 const _ = require('lodash');
 const inflect = require('inflect');
 
@@ -104,7 +102,7 @@ function $walk(routes, fn) {
 
       for (const childRoute of currentRoute.children) {
         let memberSegment = '/';
-        if (currentRoute.type == 'resources' && !_.get(childRoute, 'options.collection')) {
+        if (currentRoute.type === 'resources' && !_.get(childRoute, 'options.collection')) {
           memberSegment = `/{${singular}Id}`; // @TODO: abstract away route syntax
         }
         const path = joinSegments(basepath, currentRoute.name, memberSegment);
@@ -158,7 +156,7 @@ function $enabledActions(name, options, children, actions) {
 }
 
 function $params(name, options, children) {
-  if (children == undefined) {
+  if (children === undefined) {
     if (_.isArray(options)) {
       children = options;
       options = undefined;
@@ -169,14 +167,14 @@ function $params(name, options, children) {
     }
   }
 
-  if (options == undefined) {
+  if (options === undefined) {
     if (_.isObject(name)) {
       options = name;
       name = undefined;
     }
   }
 
-  if (name == undefined) {
+  if (name === undefined) {
     name = '/';
   }
 
@@ -192,18 +190,18 @@ function joinSegments(...segments) {
 
       segment = String(segment);
 
-      while (segment[segment.length - 1] == '/') {
+      while (segment[segment.length - 1] === '/') {
         segment = segment.slice(0, -1);
       }
 
-      while (segment[0] == '/') {
+      while (segment[0] === '/') {
         segment = segment.slice(1);
       }
 
       return segment;
     })
     .filter(segment => {
-      return segment.trim() != '';
+      return segment.trim() !== '';
     })
     .value();
 

@@ -1,7 +1,5 @@
 const findFileUp = require('find-file-up');
 const path = require('path');
-const fs = require('fs');
-const util = require('util');
 const _ = require('lodash');
 const Sequelize = require('sequelize');
 
@@ -170,7 +168,7 @@ module.exports = class Tales {
     // @NOTE: for sequelize, we depend on the database config, and want to init and associate models before starting
     if (this.database) {
       this.sequelize = new Sequelize(this.database);
-      this.$destroyCallbacks.push(async function () {
+      this.$destroyCallbacks.push(async () => {
         await this.sequelize.close();
       });
       await require('./sequelize')(this.config.dir, this.sequelize);
