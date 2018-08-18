@@ -24,7 +24,7 @@ module.exports = class Tales {
   }
 
   static async create(opts, block) {
-    let App = new Tales(opts);
+    const App = new Tales(opts);
     try {
       await App.$initialize();
       if (block) {
@@ -151,17 +151,17 @@ module.exports = class Tales {
     // == @SECTION: globals = //
 
     if (this.config.globals.Load) {
-      let name = _.isString(this.config.globals.Load) ? this.config.globals.Load : 'Load';
+      const name = _.isString(this.config.globals.Load) ? this.config.globals.Load : 'Load';
       global[name] = this.Load;
     }
 
     if (this.config.globals.App) {
-      let name = _.isString(this.config.globals.App) ? this.config.globals.App : 'App';
+      const name = _.isString(this.config.globals.App) ? this.config.globals.App : 'App';
       global[name] = this;
     }
 
     if (this.config.globals.Tales) {
-      let name = _.isString(this.config.globals.Tales) ? this.config.globals.Tales : 'Tales';
+      const name = _.isString(this.config.globals.Tales) ? this.config.globals.Tales : 'Tales';
       global[name] = Tales;
     }
 
@@ -190,7 +190,7 @@ module.exports = class Tales {
   async $destroy() {
     if (this.$destroyed) return;
 
-    for (let callback of this.$destroyCallbacks.reverse()) {
+    for (const callback of this.$destroyCallbacks.reverse()) {
       await callback.call(this);
     }
 

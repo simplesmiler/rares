@@ -20,7 +20,7 @@ module.exports = {
         },
       ]));
 
-      let routes = convertRoutes(server, App);
+      const routes = convertRoutes(server, App);
       await server.route(routes);
     });
   },

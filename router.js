@@ -41,7 +41,7 @@ function scope(name, options, children) {
 
 const RESOURCE_ACTIONS = ['new', 'create', 'show', 'edit', 'update', 'destroy'];
 function resource(name, options, children) {
-  let enabled = $enabledActions(name, options, children, RESOURCE_ACTIONS);
+  const enabled = $enabledActions(name, options, children, RESOURCE_ACTIONS);
   return $route('resource', name, options, children, _.compact([
     // @NOTE: singleton does not have index action
     // @NOTE: singleton actions do not have distinction between member/collection
@@ -57,7 +57,7 @@ function resource(name, options, children) {
 
 const RESOURCES_ACTIONS = ['index', 'new', 'create', 'show', 'edit', 'update', 'destroy'];
 function resources(name, options, children) {
-  let enabled = $enabledActions(name, options, children, RESOURCES_ACTIONS);
+  const enabled = $enabledActions(name, options, children, RESOURCES_ACTIONS);
   return $route('resources', name, options, children, _.compact([
     enabled.index && get('/', { collection: true, action: 'index' }),
     enabled.new && get(`new`, { collection: true, action: 'new' }),
@@ -75,22 +75,22 @@ function resources(name, options, children) {
 // == @SECTION: utils == //
 
 function $walk(routes, fn) {
-  for (let route of routes) {
+  for (const route of routes) {
     iterate(route, fn);
   }
 
   function iterate(currentRoute, fn, basepath, resourceRoute) {
     if (['get', 'post', 'put', 'patch', 'delete'].includes(currentRoute.type)) {
-      let name = _.get(resourceRoute, 'name') || null;
-      let singular = name ? inflect.singularize(name) : null;
-      let plural = name ? inflect.pluralize(name) : null;
+      const name = _.get(resourceRoute, 'name') || null;
+      const singular = name ? inflect.singularize(name) : null;
+      const plural = name ? inflect.pluralize(name) : null;
 
-      let controller = _.get(currentRoute, 'options.controller') || _.get(resourceRoute, 'options.controller') || plural;
-      let model = _.get(currentRoute, 'options.model') || _.get(resourceRoute, 'options.model') || singular;
-      let action = _.get(currentRoute, 'options.action') || currentRoute.name;
+      const controller = _.get(currentRoute, 'options.controller') || _.get(resourceRoute, 'options.controller') || plural;
+      const model = _.get(currentRoute, 'options.model') || _.get(resourceRoute, 'options.model') || singular;
+      const action = _.get(currentRoute, 'options.action') || currentRoute.name;
 
-      let method = currentRoute.type;
-      let path = '/' + joinSegments(basepath, currentRoute.name);
+      const method = currentRoute.type;
+      const path = '/' + joinSegments(basepath, currentRoute.name);
 
       fn({
         method, path, // @NOTE: routing
@@ -99,22 +99,22 @@ function $walk(routes, fn) {
     }
 
     else if (['resource', 'resources'].includes(currentRoute.type)) {
-      let name = currentRoute.name || null;
-      let singular = name ? inflect.singularize(name) : null;
+      const name = currentRoute.name || null;
+      const singular = name ? inflect.singularize(name) : null;
 
-      for (let childRoute of currentRoute.children) {
+      for (const childRoute of currentRoute.children) {
         let memberSegment = '/';
         if (currentRoute.type == 'resources' && !_.get(childRoute, 'options.collection')) {
           memberSegment = `/{${singular}Id}`; // @TODO: abstract away route syntax
         }
-        let path = joinSegments(basepath, currentRoute.name, memberSegment);
+        const path = joinSegments(basepath, currentRoute.name, memberSegment);
         iterate(childRoute, fn, path, currentRoute);
       }
     }
 
     else if (['scope'].includes(currentRoute.type)) {
-      let path = joinSegments(basepath, currentRoute.name);
-      for (let childRoute of currentRoute.children) {
+      const path = joinSegments(basepath, currentRoute.name);
+      for (const childRoute of currentRoute.children) {
         iterate(childRoute, fn, path, resourceRoute);
       }
     }
@@ -132,7 +132,7 @@ function $walk(routes, fn) {
 function $route(type, name, options, children, extraChildren) {
   [name, options, children] = $params(name, options, children);
 
-  let route = { type };
+  const route = { type };
   if (name) route.name = name;
   if (options) route.options = options;
   if (!_.isEmpty(children) || !_.isEmpty(extraChildren)) {
@@ -145,12 +145,12 @@ function $route(type, name, options, children, extraChildren) {
 function $enabledActions(name, options, children, actions) {
   [name, options, children] = $params(name, options, children);
 
-  let only = _.compact(_.castArray(_.get(options, 'only', actions)));
-  let except = _.compact(_.castArray(_.get(options, 'except')));
-  let enabled = _.difference(only, except);
+  const only = _.compact(_.castArray(_.get(options, 'only', actions)));
+  const except = _.compact(_.castArray(_.get(options, 'except')));
+  const enabled = _.difference(only, except);
 
-  let index = {};
-  for (let action of only) {
+  const index = {};
+  for (const action of only) {
     index[action] = _.includes(enabled, action);
   }
 

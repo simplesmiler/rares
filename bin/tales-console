@@ -4,11 +4,11 @@ module.exports = async function() {
   const REPL = require('repl');
   const Tales = require('..');
 
-  let App = await Tales.create();
+  const App = await Tales.create();
 
   // @REFERENCE: https://github.com/balderdashy/sails/blob/v1.0.0-41/bin/sails-console.js
 
-  let repl = REPL.start({
+  const repl = REPL.start({
     // Set the REPL prompt.
     prompt: `tales(${ process.env.NODE_ENV || 'development' })> `,
     // Allow the REPL to use the same global space as the Sails app, giving it access
@@ -23,9 +23,9 @@ module.exports = async function() {
   repl.context.Tales = Tales;
   repl.context.App = App;
 
-  await new Promise(function(resolve, reject) {
+  await new Promise((resolve, reject) => {
     // Bind a one-time-use handler that will run when the REPL instance emits its "exit" event.
-    repl.once('exit', function(err) {
+    repl.once('exit', (err) => {
       err ? reject(err) : resolve();
     });
   });

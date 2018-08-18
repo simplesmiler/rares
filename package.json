@@ -7,6 +7,7 @@
     "tales": "bin/tales"
   },
   "scripts": {
+    "lint": "eslint . bin/** packages/hapi-tales/bin/**",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -44,5 +45,9 @@
   "bugs": {
     "url": "https://github.com/simplesmiler/tales/issues"
   },
-  "homepage": "https://github.com/simplesmiler/tales#readme"
+  "homepage": "https://github.com/simplesmiler/tales#readme",
+  "devDependencies": {
+    "eslint": "^5.4.0",
+    "eslint-config-node": "^3.0.0"
+  }
 }

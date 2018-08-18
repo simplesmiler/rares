@@ -11,7 +11,7 @@ module.exports = async function(dir, sequelize) {
   let migrationsDir = path.resolve(dir, 'db/migrate');
 
   try {
-    let rc = require(path.resolve(process.cwd(), '.sequelizerc'));
+    const rc = require(path.resolve(process.cwd(), '.sequelizerc'));
     migrationsDir = rc['migrations-path'];
   }
   catch (err) {
@@ -21,7 +21,7 @@ module.exports = async function(dir, sequelize) {
   let pending = [];
 
   if (fs.existsSync(migrationsDir)) {
-    let umzug = new Umzug({
+    const umzug = new Umzug({
       storage: 'sequelize',
       storageOptions: { sequelize },
       migrations: {
@@ -42,19 +42,19 @@ module.exports = async function(dir, sequelize) {
 
   // == @SECTION: init and associate models == //
 
-  let modelsDir = path.resolve(dir, 'app/models');
+  const modelsDir = path.resolve(dir, 'app/models');
 
   if (fs.existsSync(modelsDir)) {
-    let models = {};
+    const models = {};
     fs
       .readdirSync(modelsDir)
       .filter(file => {
         return file.slice(-3) === '.js';
       })
       .forEach(file => {
-        let Model = require(path.join(modelsDir, file));
-        let attributes = Model.attributes ? Model.attributes() : {};
-        let options = Model.options ? Model.options() : {};
+        const Model = require(path.join(modelsDir, file));
+        const attributes = Model.attributes ? Model.attributes() : {};
+        const options = Model.options ? Model.options() : {};
         options.sequelize = sequelize;
         Model.init(attributes, options);
         models[Model.name] = Model;

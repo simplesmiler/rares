@@ -15,10 +15,10 @@ async function main() {
 }
 
 main()
-  .then(function(ok) {
+  .then((ok) => {
     process.exit(ok ? 0 : 1);
   })
-  .catch(function(err) {
+  .catch((err) => {
     console.error(err);
     process.exit(1);
   });

@@ -22,16 +22,16 @@ module.exports = class Controller {
       return;
     }
 
-    let chain = [this];
+    const chain = [this];
 
     for (let i = 0; i < chain.length; i++) {
-      let entry = Object.getPrototypeOf(chain[i]);
+      const entry = Object.getPrototypeOf(chain[i]);
       if (entry) {
         chain.push(entry);
       }
     }
 
-    for (let entry of chain.reverse()) {
+    for (const entry of chain.reverse()) {
       if (entry.$setup) {
         entry.$setup.call(this);
       }
@@ -83,21 +83,21 @@ module.exports = class Controller {
   }
 
   async $runCallbacks(queue) {
-    let front = queue.slice();
-    let back = [];
+    const front = queue.slice();
+    const back = [];
     let result;
     let runAction = true;
 
     let callback;
     while (callback = front.shift()) {
-      let only = _.castArray(_.get(callback.opts, 'only', []));
+      const only = _.castArray(_.get(callback.opts, 'only', []));
       if (!_.isEmpty(only) && !_.includes(only, this.$action)) continue;
 
-      let except = _.castArray(_.get(callback.opts, 'except', []));
+      const except = _.castArray(_.get(callback.opts, 'except', []));
       if (!_.isEmpty(except) && _.includes(except, this.$action)) continue;
 
       if (callback.type == 'before') {
-        let handler = this.$getBoundHandler(callback.opts.handler);
+        const handler = this.$getBoundHandler(callback.opts.handler);
         await handler(...callback.opts.args);
       }
 
@@ -106,7 +106,7 @@ module.exports = class Controller {
       }
 
       else if (callback.type == 'around') {
-        let handler = this.$getBoundHandler(callback.opts.handler);
+        const handler = this.$getBoundHandler(callback.opts.handler);
 
         runAction = false;
         result = await handler(async () => {
@@ -122,15 +122,15 @@ module.exports = class Controller {
     }
 
     if (runAction && front.length == 0) {
-      let actionFn = this[this.$action];
+      const actionFn = this[this.$action];
       if (!actionFn) {
         throw new Error(`No action '${this.$action}' present on controller '${this.$controller}'`);
       }
       result = await actionFn.call(this);
     }
 
-    for (let callback of back.reverse()) {
-      let handler = this.$getBoundHandler(callback.opts.handler);
+    for (const callback of back.reverse()) {
+      const handler = this.$getBoundHandler(callback.opts.handler);
       await handler(...callback.opts.args);
     }
 
@@ -141,14 +141,14 @@ module.exports = class Controller {
   async $runRescue(queue, err) {
     let currentErr = err;
 
-    for (let callback of queue.reverse()) {
-      let only = _.castArray(_.get(callback.opts, 'only', []));
+    for (const callback of queue.reverse()) {
+      const only = _.castArray(_.get(callback.opts, 'only', []));
       if (!_.isEmpty(only) && !_.includes(only, this.$action)) continue;
 
-      let except = _.castArray(_.get(callback.opts, 'except', []));
+      const except = _.castArray(_.get(callback.opts, 'except', []));
       if (!_.isEmpty(except) && _.includes(except, this.$action)) continue;
 
-      let matches = _.castArray(callback.opts.matches || []);
+      const matches = _.castArray(callback.opts.matches || []);
       let applies = _.isEmpty(matches); // @NOTE: if no matches are specified, then the hook always applies
 
       for (let match of matches) {
@@ -170,7 +170,7 @@ module.exports = class Controller {
       }
 
       if (applies) {
-        let handler = this.$getBoundHandler(callback.opts.handler);
+        const handler = this.$getBoundHandler(callback.opts.handler);
         try {
           return await handler(currentErr, ...callback.opts.args);
         }
@@ -232,24 +232,24 @@ module.exports = class Controller {
   }
 
   async $authenticate(hard = false) {
-    let id = await this.$signedAs();
+    const id = await this.$signedAs();
     if (hard && id == null) {
       throw Boom.unauthorized('No auth signature');
     }
 
-    let user = await this.$app.Load(`models/user`).findByPrimary(id);
+    const user = await this.$app.Load(`models/user`).findByPrimary(id);
     if (hard && user == null) {
       throw Boom.unauthorized('Did not find a user with given a auth signature');
     }
-    this['currentUser'] = user;
+    this.currentUser = user;
 
-    let ability = await this.$app.Load('lib/ability').$for(user);
-    this['currentAbility'] = ability;
+    const ability = await this.$app.Load('lib/ability').$for(user);
+    this.currentAbility = ability;
   }
 
   async $deauthenticate() {
-    this['currentUser'] = null;
-    this['currentAbility'] = null;
+    this.currentUser = null;
+    this.currentAbility = null;
   }
 
   // @SECTION: authorization
@@ -260,7 +260,7 @@ module.exports = class Controller {
   }
 
   async $authorize(action, subject) {
-    let allowed = await this.$can(action, subject);
+    const allowed = await this.$can(action, subject);
     if (!allowed) {
       throw Boom.forbidden('You do not have access to this resource');
     }
@@ -293,19 +293,19 @@ module.exports = class Controller {
   }
 
   async $loadResource() {
-    let Model = this.$app.Load('models/' + this.$model);
+    const Model = this.$app.Load('models/' + this.$model);
 
     // @TODO: support singleton resource
     // @TODO: support through
 
     // @REFERENCE: https://github.com/ryanb/cancan/wiki/authorizing-controller-actions
 
-    let loadCollection = ['index'].includes(this.$action); // @TODO: add case for `on: 'collection'`
-    let loadNew = ['new', 'create'].includes(this.$action);
-    let loadMember = ['show', 'edit', 'update', 'destroy'].includes(this.$action); // @TODO: add case for `on: 'member'`
+    const loadCollection = ['index'].includes(this.$action); // @TODO: add case for `on: 'collection'`
+    const loadNew = ['new', 'create'].includes(this.$action);
+    const loadMember = ['show', 'edit', 'update', 'destroy'].includes(this.$action); // @TODO: add case for `on: 'member'`
 
-    let singular = this.$model;
-    let plural = inflect.pluralize(this.$model);
+    const singular = this.$model;
+    const plural = inflect.pluralize(this.$model);
 
     if (loadCollection) {
       this[plural] = await Model.all();
@@ -325,21 +325,21 @@ module.exports = class Controller {
   }
 
   async $authorizeResource() {
-    let create = ['new', 'create'].includes(this.$action);
-    let read = ['index', 'show'].includes(this.$action);
-    let update = ['edit', 'update'].includes(this.$action);
-    let destroy = ['destroy'].includes(this.$action);
+    const create = ['new', 'create'].includes(this.$action);
+    const read = ['index', 'show'].includes(this.$action);
+    const update = ['edit', 'update'].includes(this.$action);
+    const destroy = ['destroy'].includes(this.$action);
 
-    let plural = ['index'].includes(this.$action);
-    let singular = ['new', 'create', 'show', 'edit', 'update', 'destroy'].includes(this.$action);
+    const plural = ['index'].includes(this.$action);
+    const singular = ['new', 'create', 'show', 'edit', 'update', 'destroy'].includes(this.$action);
 
-    let action = create && 'create'
+    const action = create && 'create'
       || read && 'read'
       || update && 'update'
       || destroy && 'destroy'
       || null;
 
-    let subject = singular && this[this.$model]
+    const subject = singular && this[this.$model]
       || plural && this.$app.Load(`models/${this.$model}`)
       || null;
 
@@ -351,8 +351,8 @@ module.exports = class Controller {
   }
 
   async $blueprintResource() {
-    let singular = this.$model;
-    let plural = inflect.pluralize(this.$model);
+    const singular = this.$model;
+    const plural = inflect.pluralize(this.$model);
 
     // @TODO: add status codes to blueprinted actions
 

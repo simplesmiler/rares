@@ -7,9 +7,9 @@ module.exports = class Ability {
   }
 
   async $can(action, subject) {
-    for (let entry of this.$queue) {
-      let entryActions = _.castArray(_.get(entry, 'action', []));
-      let actionMatches = _.some(entryActions, entryAction => {
+    for (const entry of this.$queue) {
+      const entryActions = _.castArray(_.get(entry, 'action', []));
+      const actionMatches = _.some(entryActions, entryAction => {
         return entryAction == 'manage'
           || entryAction == 'crud' && ['create', 'read', 'update', 'destroy'].includes(action)
           || entryAction == action;
@@ -17,8 +17,8 @@ module.exports = class Ability {
 
       if (!actionMatches) continue;
 
-      let entrySubjects = _.castArray(_.get(entry, 'subject', []));
-      let subjectMatches = _.some(entrySubjects, entrySubject => {
+      const entrySubjects = _.castArray(_.get(entry, 'subject', []));
+      const subjectMatches = _.some(entrySubjects, entrySubject => {
         return entrySubject == 'all' // covers wildcard
           || entrySubject == subject // covers model -> model and string -> string
           || _.isFunction(entrySubject) && subject instanceof entrySubject; // covers model -> record
@@ -34,14 +34,14 @@ module.exports = class Ability {
 
       // @NOTE: function predicate -> allowed if returns truthy value
       else if (_.isFunction(entry.predicate)) {
-        let allowed = await entry.predicate.call(this, action, subject);
+        const allowed = await entry.predicate.call(this, action, subject);
         if (allowed) return true;
       }
 
       // @NOTE: object predicate -> allowed if all present object fields match
       else if (_.isPlainObject(entry.predicate)) {
-        let subjectExtract = _.pick(subject, _.keys(entry.predicate));
-        let allowed = _.isEqual(entry.predicate, subjectExtract);
+        const subjectExtract = _.pick(subject, _.keys(entry.predicate));
+        const allowed = _.isEqual(entry.predicate, subjectExtract);
         if (allowed) return true;
       }
 
@@ -62,11 +62,11 @@ module.exports = class Ability {
   }
 
   static async $for(user) {
-    let ability = new this();
+    const ability = new this();
     if (!ability.$initialize) {
       throw new Error(`${this.name} does not have $initialize method`);
     }
-    await ability.$initialize(user, function(action, subject, predicate) {
+    await ability.$initialize(user, (action, subject, predicate) => {
       ability.$queue.push({ action, subject, predicate });
     });
     return ability;
