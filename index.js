@@ -53,6 +53,7 @@ module.exports = class Tales {
 
     let configPath, config;
     try {
+      // @TODO: support json file
       configPath = await findFileUp('tales.config.js');
       config = require(configPath);
       if (_.isFunction(config)) {
@@ -81,6 +82,7 @@ module.exports = class Tales {
     let secrets;
 
     try {
+      // @TODO: support function variant
       secrets = require(path.resolve(this.config.dir, 'config/secrets'));
     }
     catch (err) {
@@ -108,6 +110,7 @@ module.exports = class Tales {
     let database;
 
     try {
+      // @TODO: support function variant
       database = require(path.resolve(this.config.dir, 'config/database'));
     }
     catch (err) {
@@ -125,6 +128,7 @@ module.exports = class Tales {
     // == @SECTION: run application hook == //
 
     try {
+      // @NOTE: meaningless to have a non-function variant
       await require(path.resolve(this.config.dir, 'config/application'))(this, Tales);
     }
     catch (err) {
@@ -134,6 +138,7 @@ module.exports = class Tales {
     // == @SECTION: run environment hook == //
 
     try {
+      // @NOTE: meaningless to have a non-function variant
       await require(path.resolve(this.config.dir, 'config/environments', this.env))(this, Tales);
     }
     catch (err) {
@@ -143,6 +148,7 @@ module.exports = class Tales {
     // == @SECTION: setup loader == //
 
     this.Load = name => {
+      // @TODO: make async and support non-function variant
       return require(path.resolve(this.config.dir, 'app', name))(this, Tales);
     };
 
@@ -177,6 +183,7 @@ module.exports = class Tales {
     // == @SECTION: routes == //
 
     try {
+      // @TODO: support json and non-function variant
       this.routes = await require(path.resolve(this.config.dir, 'config/routes'))(this, Tales);
     }
     catch (err) {
