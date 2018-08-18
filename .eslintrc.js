@@ -3,6 +3,13 @@ module.exports = {
     'node',
     'node/style-guide',
   ],
+  'env': {
+    'node': true,
+    'jest/globals': true,
+  },
+  'plugins': [
+    'jest',
+  ],
   'rules': {
     // @NOTE: not granular enough
     'arrow-body-style': 'off',
