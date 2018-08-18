@@ -91,7 +91,9 @@ module.exports = function convert(server, App) {
 
         catch (err) {
           // @NOTE: keep explicit http errors as is
-          if (Boom.isBoom(err)) throw err;
+          if (Boom.isBoom(err)) {
+            throw err;
+          }
 
           // @NOTE: map database errors to http errors
           // @NOTE: it's important to catch specific errors firts, and then generic,

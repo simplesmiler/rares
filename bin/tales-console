@@ -25,7 +25,7 @@ module.exports = async function() {
 
   await new Promise((resolve, reject) => {
     // Bind a one-time-use handler that will run when the REPL instance emits its "exit" event.
-    repl.once('exit', (err) => {
+    repl.once('exit', err => {
       err ? reject(err) : resolve();
     });
   });

@@ -51,7 +51,7 @@ module.exports = class Controller {
     }
 
     else {
-      console.error(`Unexpected situation, a '${type}' hook from controller '${this.$controller}' has ${args.length} arguments (expected 1 or 2)`)
+      console.error(`Unexpected situation, a '${type}' hook from controller '${this.$controller}' has ${args.length} arguments (expected 1 or 2)`);
       return;
     }
 

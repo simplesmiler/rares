@@ -14,11 +14,13 @@ async function main() {
   return await require('./tales-' + command)(args);
 }
 
+/* eslint-disable no-process-exit */
 main()
-  .then((ok) => {
+  .then(ok => {
     process.exit(ok ? 0 : 1);
   })
-  .catch((err) => {
+  .catch(err => {
     console.error(err);
     process.exit(1);
   });
+/* eslint-enable no-process-exit */
