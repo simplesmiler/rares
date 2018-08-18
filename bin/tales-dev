@@ -2,7 +2,5 @@
 
 module.exports = async function() {
   // @TODO: choose between supported servers
-  await require('../packages/hapi-tales/bin/server')();
-
-  return true;
+  return await require('../packages/hapi-tales/bin/server')();
 };
