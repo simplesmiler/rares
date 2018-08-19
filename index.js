@@ -50,12 +50,13 @@ module.exports = class Tales {
 
   async $initialize() {
     // == @SECTION: figure out config file == //
+    const cwd = _.get(this.opts, 'dir') || process.cwd();
 
     let configPath, config;
     let whineAboutMissingConfigFile = false;
     try {
       // @TODO: support json file
-      configPath = await findFileUp('tales.config.js');
+      configPath = await findFileUp('tales.config.js', cwd);
       config = require(configPath);
       if (_.isFunction(config)) {
         config = await config();
@@ -66,7 +67,7 @@ module.exports = class Tales {
     }
 
     this.config = config = _.defaultsDeep(null, this.opts, config, {
-      dir: configPath || process.cwd(),
+      dir: _.get(config, 'dir') || configPath || cwd,
       whiny: true,
       globals: {
         Load: false,
