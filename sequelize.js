@@ -4,26 +4,17 @@ const Umzug = require('umzug');
 
 // === //
 
-module.exports = async function(dir, sequelize) {
+module.exports = async function(App, Tales) {
+  const dir = App.config.dir;
 
   // == @SECTION: check migrations == //
-
-  let migrationsDir = path.resolve(dir, 'db/migrate');
-
-  try {
-    const rc = require(path.resolve(process.cwd(), '.sequelizerc'));
-    migrationsDir = rc['migrations-path'];
-  }
-  catch (err) {
-    console.warn('Failed to require .sequelizerc file, continuing without it');
-  }
-
+  const migrationsDir = path.resolve(dir, 'db/migrate');
   let pending = [];
 
   if (fs.existsSync(migrationsDir)) {
     const umzug = new Umzug({
       storage: 'sequelize',
-      storageOptions: { sequelize },
+      storageOptions: { sequelize: App.sequelize },
       migrations: {
         path: migrationsDir,
       },
@@ -37,6 +28,7 @@ module.exports = async function(dir, sequelize) {
   }
 
   if (pending.length) {
+    // @TODO: in dev mode, start the server but complain about migrations on every request
     throw new Error('Can not start the server, some migrations are pending');
   }
 
@@ -52,10 +44,10 @@ module.exports = async function(dir, sequelize) {
         return file.slice(-3) === '.js';
       })
       .forEach(file => {
-        const Model = require(path.join(modelsDir, file));
+        const Model = require(path.join(modelsDir, file))(App, Tales);
         const attributes = Model.attributes ? Model.attributes() : {};
         const options = Model.options ? Model.options() : {};
-        options.sequelize = sequelize;
+        options.sequelize = App.sequelize;
         Model.init(attributes, options);
         models[Model.name] = Model;
       });

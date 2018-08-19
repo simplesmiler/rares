@@ -177,7 +177,7 @@ module.exports = class Tales {
       this.$destroyCallbacks.push(async () => {
         await this.sequelize.close();
       });
-      await require('./sequelize')(this.config.dir, this.sequelize);
+      await require('./sequelize')(this, Tales);
     }
 
     // == @SECTION: routes == //
