@@ -11,6 +11,8 @@
     "bin"
   ],
   "scripts": {
+    "docs:dev": "vuepress dev docs",
+    "docs:build": "vuepress build docs",
     "lint": "eslint . bin/**",
     "test": "npm run lint && npm audit && npm run test:e2e",
     "test:e2e": "jest test/e2e"
@@ -51,6 +53,7 @@
     "eslint-plugin-jest": "^21.21.0",
     "get-port": "^4.0.0",
     "hapi": "^17.5.1",
-    "jest": "^23.5.0"
+    "jest": "^23.5.0",
+    "vuepress": "^0.14.2"
   }
 }

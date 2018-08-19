@@ -4,3 +4,6 @@ package-lock.json
 
 # IDEA
 .idea
+
+# Build
+/docs/.vuepress/dist
