@@ -13,7 +13,7 @@ module.exports = {
 
 async function makeFixture(name, options) {
   const dir = path.resolve(__dirname, 'fixtures', name);
-  options = _.defaultsDeep(null, options, { dir, globals: false });
+  options = _.defaultsDeep(null, options, { dir, globals: false, whiny: false });
   const hapi = await makeHapiServer(options);
   const axios = await makeAxiosClient(hapi.info.uri);
   const fixture = {

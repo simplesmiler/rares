@@ -52,6 +52,7 @@ module.exports = class Tales {
     // == @SECTION: figure out config file == //
 
     let configPath, config;
+    let whineAboutMissingConfigFile = false;
     try {
       // @TODO: support json file
       configPath = await findFileUp('tales.config.js');
@@ -61,17 +62,22 @@ module.exports = class Tales {
       }
     }
     catch (err) {
-      console.warn(`Failed to require tales.config.js file, continuing without it`);
+      whineAboutMissingConfigFile = true;
     }
 
     this.config = config = _.defaultsDeep(null, this.opts, config, {
       dir: configPath || process.cwd(),
+      whiny: true,
       globals: {
         Load: true,
         App: true,
         Tales: true,
       },
     });
+
+    if (whineAboutMissingConfigFile && this.config.whiny) {
+      console.warn(`Failed to require tales.config.js file, continuing without it`);
+    }
 
     // == @SECTION: figure out env == //
 
@@ -86,7 +92,9 @@ module.exports = class Tales {
       secrets = require(path.resolve(this.config.dir, 'config/secrets'));
     }
     catch (err) {
-      console.warn(`Failed to require config/secrets.js file, continuing without it`);
+      if (this.config.whiny) {
+        console.warn(`Failed to require config/secrets.js file, continuing without it`);
+      }
     }
 
     if (secrets) {
@@ -97,7 +105,9 @@ module.exports = class Tales {
       }
 
       if (_.isEmpty(this.secrets.secretKeyBase)) {
-        console.warn(`The config/secrets.js file does not contain 'secretKeyBase' for ${this.env}, continuing without it`);
+        if (this.config.whiny) {
+          console.warn(`The config/secrets.js file does not contain 'secretKeyBase' for ${this.env}, continuing without it`);
+        }
       }
 
       else if (this.secrets.secretKeyBase.length < 32) {
@@ -114,7 +124,9 @@ module.exports = class Tales {
       database = require(path.resolve(this.config.dir, 'config/database'));
     }
     catch (err) {
-      console.warn(`Failed to require config/database.js file, continuing without it`);
+      if (this.config.whiny) {
+        console.warn(`Failed to require config/database.js file, continuing without it`);
+      }
     }
 
     if (database) {
@@ -132,7 +144,9 @@ module.exports = class Tales {
       await require(path.resolve(this.config.dir, 'config/application'))(this, Tales);
     }
     catch (err) {
-      console.warn(`Failed to require config/application.js file, continuing without it`);
+      if (this.config.whiny) {
+        console.warn(`Failed to require config/application.js file, continuing without it`);
+      }
     }
 
     // == @SECTION: run environment hook == //
@@ -142,7 +156,9 @@ module.exports = class Tales {
       await require(path.resolve(this.config.dir, 'config/environments', this.env))(this, Tales);
     }
     catch (err) {
-      console.warn(`Failed to require config/environments/${this.env}.js file, continuing without it`);
+      if (this.config.whiny) {
+        console.warn(`Failed to require config/environments/${this.env}.js file, continuing without it`);
+      }
     }
 
     // == @SECTION: setup loader == //
