@@ -4,7 +4,7 @@ module.exports = async function() {
   const Rares = require('..');
 
   // @TODO: choose between supported servers
-  const server = await require('../packages/hapi-rares/server')(null, Rares);
+  const server = await require('hapi-rares/server')(null, Rares);
 
   console.log(`Starting the server...`);
   await server.start();
