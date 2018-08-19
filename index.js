@@ -69,9 +69,9 @@ module.exports = class Tales {
       dir: configPath || process.cwd(),
       whiny: true,
       globals: {
-        Load: true,
-        App: true,
-        Tales: true,
+        Load: false,
+        App: false,
+        Tales: false,
       },
     });
 
