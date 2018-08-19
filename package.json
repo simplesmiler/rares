@@ -7,7 +7,7 @@
     "rings": "bin/rings"
   },
   "scripts": {
-    "lint": "eslint . bin/** packages/hapi-rings/bin/**",
+    "lint": "eslint . bin/**",
     "test": "npm run lint && npm audit && npm run test:e2e",
     "test:e2e": "jest test/e2e"
   },
@@ -29,6 +29,7 @@
     "boom": "^7.2.0",
     "find-file-up": "^2.0.1",
     "get-prototype-chain": "^1.0.1",
+    "hapi-rings": "file:packages/hapi-rings",
     "inflect": "^0.4.0",
     "lodash": "^4.17.10",
     "pg": "^7.4.3",

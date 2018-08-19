@@ -1,6 +1,22 @@
 #!/usr/bin/env node
 
 module.exports = async function() {
+  const Rings = require('..');
+
   // @TODO: choose between supported servers
-  return await require('../packages/hapi-rings/bin/server')();
+  const server = await require('../packages/hapi-rings/server')(null, Rings);
+
+  console.log(`Starting the server...`);
+  await server.start();
+  console.log(`Server running at: ${server.uri}`);
+
+  await new Promise(resolve => process.on('SIGINT', resolve));
+
+  console.log(`Stopping the server...`);
+  await server.stop();
+  console.log(`Server stopped`);
+
+  await server.cleanup();
+
+  return true;
 };

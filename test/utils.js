@@ -3,6 +3,7 @@ const path = require('path');
 const getPort = require('get-port');
 const axios = require('axios');
 const Hapi = require('hapi');
+const Rings = require('..');
 const HapiRings = require('../packages/hapi-rings');
 
 module.exports = {
@@ -13,7 +14,7 @@ module.exports = {
 
 async function makeFixture(name, options) {
   const dir = path.resolve(__dirname, 'fixtures', name);
-  options = _.defaultsDeep(null, options, { dir, whiny: false });
+  options = _.defaultsDeep(null, options, { Rings, dir, whiny: false });
   const hapi = await makeHapiServer(options);
   const axios = await makeAxiosClient(hapi.info.uri);
   const fixture = {
