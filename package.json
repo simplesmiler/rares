@@ -2,10 +2,14 @@
   "name": "rares",
   "version": "0.1.0",
   "description": "Modern backend framework, inspired by Ruby on Rails",
-  "main": "index.js",
+  "main": "lib/index.js",
   "bin": {
     "rares": "bin/rares"
   },
+  "files": [
+    "lib",
+    "bin"
+  ],
   "scripts": {
     "lint": "eslint . bin/**",
     "test": "npm run lint && npm audit && npm run test:e2e",
