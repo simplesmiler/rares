@@ -1,5 +1,5 @@
 module.exports = {
-  base: '/rares/',
+  // base: '/rares/',
   title: 'Rares',
   description: 'Modern backend framework',
   themeConfig: {
