@@ -7,11 +7,11 @@ async function main() {
 
   if (!command || !commands.includes(command)) {
     // @TODO: display usage
-    console.warn(`Try "rings dev" or "rings console"`);
+    console.warn(`Try "rares dev" or "rares console"`);
     return false;
   }
 
-  return await require('./rings-' + command)(args);
+  return await require('./rares-' + command)(args);
 }
 
 /* eslint-disable no-process-exit */

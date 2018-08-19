@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
 module.exports = async function() {
-  const Rings = require('..');
+  const Rares = require('..');
 
   // @TODO: choose between supported servers
-  const server = await require('../packages/hapi-rings/server')(null, Rings);
+  const server = await require('../packages/hapi-rares/server')(null, Rares);
 
   console.log(`Starting the server...`);
   await server.start();

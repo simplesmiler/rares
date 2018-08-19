@@ -4,30 +4,30 @@ const Sequelize = require('sequelize');
 const Boom = require('boom');
 
 module.exports = function convert(server, App) {
-  const Rings = App.constructor;
+  const Rares = App.constructor;
 
   if (App.secrets && App.secrets.secretKeyBase) {
-    Rings.Controller.prototype.$store = async function(key, value) {
+    Rares.Controller.prototype.$store = async function(key, value) {
       this.$request.yar.set(key, value);
     };
 
-    Rings.Controller.prototype.$load = async function(key) {
+    Rares.Controller.prototype.$load = async function(key) {
       return this.$request.yar.get(key);
     };
 
-    Rings.Controller.prototype.$clear = async function(key) {
+    Rares.Controller.prototype.$clear = async function(key) {
       this.$request.yar.clear(key);
     };
   }
   else {
-    Rings.Controller.prototype.$store = Rings.Controller.prototype.$load = Rings.Controller.prototype.$clear = async function() {
+    Rares.Controller.prototype.$store = Rares.Controller.prototype.$load = Rares.Controller.prototype.$clear = async function() {
       throw new Error(`If you want to use sessions make sure to include 'secretKeyBase' in the secrets file`);
     };
   }
 
   const routes = [];
 
-  Rings.Router.$walk(App.routes, entry => {
+  Rares.Router.$walk(App.routes, entry => {
     const { controller: controllerName, action: actionName, model: modelName, path, method } = entry;
 
     const ControllerClass = App.Load('controllers/' + controllerName);
@@ -51,7 +51,7 @@ module.exports = function convert(server, App) {
 
         const controller = new ControllerClass({
           // @NOTE: generic application stuff
-          $rings: Rings,
+          $rares: Rares,
           $app: App,
 
           // @NOTE: hapi-specific request stuff

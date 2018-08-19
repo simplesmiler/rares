@@ -1,7 +1,7 @@
 const Hapi = require('hapi');
 const HapiTales = require('.');
 
-module.exports = async function(App, Rings) {
+module.exports = async function(App, Rares) {
   let hapi = new Hapi.Server({
     host: process.env.HOST || 'localhost',
     port: process.env.PORT || 3000,
@@ -9,7 +9,7 @@ module.exports = async function(App, Rings) {
 
   await hapi.register({
     plugin: HapiTales,
-    options: { App, Rings },
+    options: { App, Rares },
   });
 
   const server = {

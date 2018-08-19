@@ -3,13 +3,13 @@ const _ = require('lodash');
 
 module.exports = {
 
-  name: 'hapi-rings',
+  name: 'hapi-rares',
 
   async register(server, opts) {
-    const { App, Rings } = opts;
-    opts = _.omit(opts, ['App', 'Rings']);
+    const { App, Rares } = opts;
+    opts = _.omit(opts, ['App', 'Rares']);
 
-    if (!App && !Rings) throw new Error('Expected either App or Rings to be in the plugin options');
+    if (!App && !Rares) throw new Error('Expected either App or Rares to be in the plugin options');
 
     async function mount(server, App) {
       if (App.server) throw new Error('This app is already mounted');
@@ -35,7 +35,7 @@ module.exports = {
       await mount(server, App);
     }
     else {
-      await Rings.create(opts, async App => {
+      await Rares.create(opts, async App => {
         await mount(server, App);
       });
     }

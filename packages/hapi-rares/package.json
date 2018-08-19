@@ -1,14 +1,14 @@
 {
-  "name": "hapi-rings",
+  "name": "hapi-rares",
   "version": "0.1.0",
-  "description": "Rings bindings for Hapi",
+  "description": "Rares bindings for Hapi",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/simplesmiler/hapi-rings.git"
+    "url": "git+https://github.com/simplesmiler/hapi-rares.git"
   },
   "keywords": [
     "hapi",
@@ -20,9 +20,9 @@
   "author": "Denis Karabaza <denis.karabaza@gmail.com>",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/simplesmiler/hapi-rings/issues"
+    "url": "https://github.com/simplesmiler/hapi-rares/issues"
   },
-  "homepage": "https://github.com/simplesmiler/hapi-rings#readme",
+  "homepage": "https://github.com/simplesmiler/hapi-rares#readme",
   "dependencies": {
     "boom": "^7.2.0",
     "hapi": "^17.5.3",

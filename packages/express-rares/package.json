@@ -1,14 +1,14 @@
 {
-  "name": "express-rings",
+  "name": "express-rares",
   "version": "0.0.0",
-  "description": "Rings bindings for Express",
+  "description": "Rares bindings for Express",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/simplesmiler/express-rings.git"
+    "url": "git+https://github.com/simplesmiler/express-rares.git"
   },
   "keywords": [
     "express",
@@ -20,7 +20,7 @@
   "author": "Denis Karabaza <denis.karabaza@gmail.com>",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/simplesmiler/express-rings/issues"
+    "url": "https://github.com/simplesmiler/express-rares/issues"
   },
-  "homepage": "https://github.com/simplesmiler/express-rings#readme"
+  "homepage": "https://github.com/simplesmiler/express-rares#readme"
 }

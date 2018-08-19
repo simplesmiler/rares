@@ -1,5 +1,5 @@
-module.exports = (App, Rings) => {
-  const { get } = Rings.Router;
+module.exports = (App, Rares) => {
+  const { get } = Rares.Router;
 
   return [
     get('/', { controller: 'index', action: 'index' }),
