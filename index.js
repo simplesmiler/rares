@@ -163,10 +163,13 @@ module.exports = class Tales {
     }
 
     // == @SECTION: setup loader == //
-
+    const loaderCache = {};
     this.Load = name => {
-      // @TODO: make async and support non-function variant
-      return require(path.resolve(this.config.dir, 'app', name))(this, Tales);
+      // @NOTE: for now, loadable stuff does not support async and direct export variants
+      if (loaderCache[name]) return loaderCache[name];
+      const value = require(path.resolve(this.config.dir, 'app', name))(this, Tales);
+      loaderCache[name] = value;
+      return value;
     };
 
     // == @SECTION: globals = //

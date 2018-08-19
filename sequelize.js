@@ -43,8 +43,11 @@ module.exports = async function(App, Tales) {
       .filter(file => {
         return file.slice(-3) === '.js';
       })
+      .map(file => {
+        return file.slice(0, -3);
+      })
       .forEach(file => {
-        const Model = require(path.join(modelsDir, file))(App, Tales);
+        const Model = App.Load('models/' + file);
         const attributes = Model.attributes ? Model.attributes() : {};
         const options = Model.options ? Model.options() : {};
         options.sequelize = App.sequelize;
