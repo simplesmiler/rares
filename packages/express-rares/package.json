@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/simplesmiler/express-rares.git"
+    "url": "git+https://github.com/simplesmiler/rares.git"
   },
   "keywords": [
     "express",
@@ -20,7 +20,7 @@
   "author": "Denis Karabaza <denis.karabaza@gmail.com>",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/simplesmiler/express-rares/issues"
+    "url": "https://github.com/simplesmiler/rares/issues"
   },
-  "homepage": "https://github.com/simplesmiler/express-rares#readme"
+  "homepage": "https://github.com/simplesmiler/rares#readme"
 }
