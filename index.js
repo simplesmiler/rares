@@ -3,7 +3,7 @@ const path = require('path');
 const _ = require('lodash');
 const Sequelize = require('sequelize');
 
-module.exports = class Tales {
+module.exports = class Rings {
 
   static get Sequelize() {
     return Sequelize;
@@ -22,7 +22,7 @@ module.exports = class Tales {
   }
 
   static async create(opts, block) {
-    const App = new Tales(opts);
+    const App = new Rings(opts);
     try {
       await App.$initialize();
       if (block) {
@@ -30,7 +30,7 @@ module.exports = class Tales {
           await block(App);
         }
         else {
-          throw new Error('Block, passed to Tales.create, is not a function');
+          throw new Error('Block, passed to Rings.create, is not a function');
         }
       }
       return App;
@@ -56,7 +56,7 @@ module.exports = class Tales {
     let whineAboutMissingConfigFile = false;
     try {
       // @TODO: support json file
-      configPath = await findFileUp('tales.config.js', cwd);
+      configPath = await findFileUp('rings.config.js', cwd);
       config = require(configPath);
       if (_.isFunction(config)) {
         config = await config();
@@ -72,12 +72,12 @@ module.exports = class Tales {
       globals: {
         Load: false,
         App: false,
-        Tales: false,
+        Rings: false,
       },
     });
 
     if (whineAboutMissingConfigFile && this.config.whiny) {
-      console.warn(`Failed to require tales.config.js file, continuing without it`);
+      console.warn(`Failed to require rings.config.js file, continuing without it`);
     }
 
     // == @SECTION: figure out env == //
@@ -142,7 +142,7 @@ module.exports = class Tales {
 
     try {
       // @NOTE: meaningless to have a non-function variant
-      await require(path.resolve(this.config.dir, 'config/application'))(this, Tales);
+      await require(path.resolve(this.config.dir, 'config/application'))(this, Rings);
     }
     catch (err) {
       if (this.config.whiny) {
@@ -154,7 +154,7 @@ module.exports = class Tales {
 
     try {
       // @NOTE: meaningless to have a non-function variant
-      await require(path.resolve(this.config.dir, 'config/environments', this.env))(this, Tales);
+      await require(path.resolve(this.config.dir, 'config/environments', this.env))(this, Rings);
     }
     catch (err) {
       if (this.config.whiny) {
@@ -167,7 +167,7 @@ module.exports = class Tales {
     this.Load = name => {
       // @NOTE: for now, loadable stuff does not support async and direct export variants
       if (loaderCache[name]) return loaderCache[name];
-      const value = require(path.resolve(this.config.dir, 'app', name))(this, Tales);
+      const value = require(path.resolve(this.config.dir, 'app', name))(this, Rings);
       loaderCache[name] = value;
       return value;
     };
@@ -184,9 +184,9 @@ module.exports = class Tales {
       global[name] = this;
     }
 
-    if (this.config.globals.Tales) {
-      const name = _.isString(this.config.globals.Tales) ? this.config.globals.Tales : 'Tales';
-      global[name] = Tales;
+    if (this.config.globals.Rings) {
+      const name = _.isString(this.config.globals.Rings) ? this.config.globals.Rings : 'Rings';
+      global[name] = Rings;
     }
 
     // == @SECTION: setup models == //
@@ -197,14 +197,14 @@ module.exports = class Tales {
       this.$destroyCallbacks.push(async () => {
         await this.sequelize.close();
       });
-      await require('./sequelize')(this, Tales);
+      await require('./sequelize')(this, Rings);
     }
 
     // == @SECTION: routes == //
 
     try {
       // @TODO: support json and non-function variant
-      this.routes = await require(path.resolve(this.config.dir, 'config/routes'))(this, Tales);
+      this.routes = await require(path.resolve(this.config.dir, 'config/routes'))(this, Rings);
     }
     catch (err) {
       throw new Error('Failed to require config/routes.js file, can not continue without it');

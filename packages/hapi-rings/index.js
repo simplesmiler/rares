@@ -1,13 +1,13 @@
 const convertRoutes = require('./convert-routes');
 const _ = require('lodash');
-const Tales = require('../..');
+const Rings = require('../..');
 
 module.exports = {
 
-  name: 'hapi-tales',
+  name: 'hapi-rings',
 
   async register(server, opts) {
-    await Tales.create(opts, async App => {
+    await Rings.create(opts, async App => {
       await server.register(_.compact([
         App.secrets && App.secrets.secretKeyBase && {
           plugin: require('yar'),

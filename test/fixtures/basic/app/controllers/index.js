@@ -1,4 +1,4 @@
-module.exports = (App, Tales) => class IndexController extends Tales.Controller {
+module.exports = (App, Rings) => class IndexController extends Rings.Controller {
 
   async index() {
     return {

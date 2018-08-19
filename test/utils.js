@@ -3,7 +3,7 @@ const path = require('path');
 const getPort = require('get-port');
 const axios = require('axios');
 const Hapi = require('hapi');
-const HapiTales = require('../packages/hapi-tales');
+const HapiRings = require('../packages/hapi-rings');
 
 module.exports = {
   makeFixture,
@@ -35,7 +35,7 @@ async function makeHapiServer(options) {
   });
 
   await server.register({
-    plugin: HapiTales,
+    plugin: HapiRings,
     options,
   });
 

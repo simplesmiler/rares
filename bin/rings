@@ -7,11 +7,11 @@ async function main() {
 
   if (!command || !commands.includes(command)) {
     // @TODO: display usage
-    console.warn(`Try "tales dev" or "tales console"`);
+    console.warn(`Try "rings dev" or "rings console"`);
     return false;
   }
 
-  return await require('./tales-' + command)(args);
+  return await require('./rings-' + command)(args);
 }
 
 /* eslint-disable no-process-exit */

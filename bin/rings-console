@@ -2,15 +2,15 @@
 
 module.exports = async function() {
   const REPL = require('repl');
-  const Tales = require('..');
+  const Rings = require('..');
 
-  const App = await Tales.create();
+  const App = await Rings.create();
 
   // @REFERENCE: https://github.com/balderdashy/sails/blob/v1.0.0-41/bin/sails-console.js
 
   const repl = REPL.start({
     // Set the REPL prompt.
-    prompt: `tales(${ process.env.NODE_ENV || 'development' })> `,
+    prompt: `rings(${ process.env.NODE_ENV || 'development' })> `,
     // Allow the REPL to use the same global space as the Sails app, giving it access
     // to things like globalized models.
     useGlobal: true,
@@ -20,7 +20,7 @@ module.exports = async function() {
     terminal: true,
   });
 
-  repl.context.Tales = Tales;
+  repl.context.Rings = Rings;
   repl.context.App = App;
 
   await new Promise((resolve, reject) => {

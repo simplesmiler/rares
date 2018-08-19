@@ -1,19 +1,19 @@
 {
-  "name": "tales",
+  "name": "rings",
   "version": "0.1.0",
   "description": "Modern backend framework, inspired by Ruby on Rails",
   "main": "index.js",
   "bin": {
-    "tales": "bin/tales"
+    "rings": "bin/rings"
   },
   "scripts": {
-    "lint": "eslint . bin/** packages/hapi-tales/bin/**",
+    "lint": "eslint . bin/** packages/hapi-rings/bin/**",
     "test": "npm run lint && npm audit && npm run test:e2e",
     "test:e2e": "jest test/e2e"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/simplesmiler/tales.git"
+    "url": "git+https://github.com/simplesmiler/rings.git"
   },
   "keywords": [
     "modern",
@@ -44,9 +44,9 @@
     "yar": "^9.0.1"
   },
   "bugs": {
-    "url": "https://github.com/simplesmiler/tales/issues"
+    "url": "https://github.com/simplesmiler/rings/issues"
   },
-  "homepage": "https://github.com/simplesmiler/tales#readme",
+  "homepage": "https://github.com/simplesmiler/rings#readme",
   "devDependencies": {
     "axios": "^0.18.0",
     "eslint": "^5.4.0",

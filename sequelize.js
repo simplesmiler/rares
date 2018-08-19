@@ -4,7 +4,7 @@ const Umzug = require('umzug');
 
 // === //
 
-module.exports = async function(App, Tales) {
+module.exports = async function(App, Rings) {
   const dir = App.config.dir;
 
   // == @SECTION: check migrations == //
