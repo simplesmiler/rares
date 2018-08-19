@@ -1,0 +1,26 @@
+{
+  "name": "express-rings",
+  "version": "0.0.0",
+  "description": "Rings bindings for Express",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/simplesmiler/express-rings.git"
+  },
+  "keywords": [
+    "express",
+    "rails",
+    "modern",
+    "backend",
+    "framework"
+  ],
+  "author": "Denis Karabaza <denis.karabaza@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/simplesmiler/express-rings/issues"
+  },
+  "homepage": "https://github.com/simplesmiler/express-rings#readme"
+}

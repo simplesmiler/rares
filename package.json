@@ -29,19 +29,11 @@
     "boom": "^7.2.0",
     "find-file-up": "^2.0.1",
     "get-prototype-chain": "^1.0.1",
-    "hapi": "^17.5.1",
-    "hapi-error": "^1.8.0",
-    "hapi-nuxt": "^1.0.1",
     "inflect": "^0.4.0",
     "lodash": "^4.17.10",
     "pg": "^7.4.3",
-    "poop": "^3.0.0",
-    "promdash": "^1.2.0",
-    "qs": "^6.5.2",
     "sequelize": "^4.37.10",
-    "sequelize-cli": "^4.0.0",
-    "umzug": "^2.1.0",
-    "yar": "^9.0.1"
+    "umzug": "^2.1.0"
   },
   "bugs": {
     "url": "https://github.com/simplesmiler/rings/issues"
@@ -53,6 +45,7 @@
     "eslint-config-node": "^3.0.0",
     "eslint-plugin-jest": "^21.21.0",
     "get-port": "^4.0.0",
+    "hapi": "^17.5.1",
     "jest": "^23.5.0"
   }
 }
