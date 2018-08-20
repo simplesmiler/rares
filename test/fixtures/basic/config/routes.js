@@ -1,7 +1,7 @@
 module.exports = (App, Rares) => {
-  const { get } = Rares.Router;
-
+  const { get, resource } = Rares.Router;
   return [
     get('/', { controller: 'index', action: 'index' }),
+    resource('memory', { only: ['show', 'update'] }),
   ];
 };
