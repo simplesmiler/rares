@@ -47,7 +47,8 @@ module.exports = function convert(server, App) {
       method,
       async handler(request, h) {
         const query = request.url.search ? qs.parse(request.url.search.slice(1), { decoder: decode }) : {};
-        const params = _.defaults(null, request.params, query, request.payload);
+        const body = request.payload;
+        const params = _.defaults(null, request.params, query, body);
 
         const controller = new ControllerClass({
           // @NOTE: generic application stuff
@@ -59,6 +60,7 @@ module.exports = function convert(server, App) {
           $request: request,
 
           // @NOTE: generic request stuff
+          $body: body,
           $params: params,
           $model: modelName,
           $controller: controllerName,
