@@ -45,6 +45,16 @@ async function makeHapiServer(options) {
   return server;
 }
 
+const mixin = {};
+for (const name of ['options', 'head', 'get', 'post', 'put', 'patch', 'delete']) {
+  mixin['$' + name] = async function(...args) {
+    const result = await this[name](...args);
+    return result.data;
+  };
+}
+
 async function makeAxiosClient(baseURL) {
-  return axios.create({ baseURL });
+  const client = axios.create({ baseURL });
+  Object.assign(client, mixin);
+  return client;
 }
