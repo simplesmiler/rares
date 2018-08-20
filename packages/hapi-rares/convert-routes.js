@@ -67,14 +67,14 @@ module.exports = function convert(server, App) {
 
         try {
           const result = await controller.$run();
-          const response = h.response(result.value);
+          const response = h.response(JSON.stringify(result.value));
 
           const status = _.get(result.opts, 'status');
           if (status != null) {
             response.code(status);
           }
 
-          const type = _.get(result.opts, 'type');
+          const type = _.get(result.opts, 'type', 'application/json');
           if (type != null) {
             response.type(type);
           }
