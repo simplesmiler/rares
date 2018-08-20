@@ -46,9 +46,10 @@ module.exports = function convert(server, App) {
       path,
       method,
       async handler(request, h) {
-        const query = request.url.search ? qs.parse(request.url.search.slice(1), { decoder: decode }) : {};
         const body = request.payload;
-        const params = _.defaults(null, request.params, query, body);
+        const query = request.url.search ? qs.parse(request.url.search.slice(1), { decoder: decode }) : {};
+        const params = request.params;
+        const values = _.defaultsDeep(null, params, query, body);
 
         const controller = new ControllerClass({
           // @NOTE: generic application stuff
@@ -61,7 +62,9 @@ module.exports = function convert(server, App) {
 
           // @NOTE: generic request stuff
           $body: body,
+          $query: query,
           $params: params,
+          $values: values,
           $model: modelName,
           $controller: controllerName,
           $action: actionName,
