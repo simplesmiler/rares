@@ -22,7 +22,9 @@
     "url": "git+https://github.com/simplesmiler/rares.git"
   },
   "keywords": [
+    "rares",
     "modern",
+    "api",
     "backend",
     "framework",
     "rails",

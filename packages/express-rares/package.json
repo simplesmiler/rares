@@ -11,11 +11,13 @@
     "url": "git+https://github.com/simplesmiler/rares.git"
   },
   "keywords": [
-    "express",
-    "rails",
+    "rares",
     "modern",
+    "api",
     "backend",
-    "framework"
+    "framework",
+    "rails",
+    "express"
   ],
   "author": "Denis Karabaza <denis.karabaza@gmail.com>",
   "license": "ISC",
