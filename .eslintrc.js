@@ -22,6 +22,7 @@ module.exports = {
     'class-methods-use-this': 'off',
     'eqeqeq': ['error', 'always', { 'null': 'ignore' }],
     'no-cond-assign': 'warn',
+    'no-unused-vars': 'warn',
 
     // @NOTE: irrelevant
     'import/no-commonjs': 'off',
