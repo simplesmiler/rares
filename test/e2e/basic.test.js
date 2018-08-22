@@ -31,13 +31,31 @@ describe('Basic', () => {
   });
 
   test('Memory can be set and read', async () => {
-    expect.assertions(2);
+    expect.assertions(6);
     let memory;
 
+    // @NOTE: set 1
     memory = await fixture.axios.$put('/memory', { value: 1 });
     expect(memory).toEqual({ value: 1 });
 
+    // @NOTE: read 1
+    memory = await fixture.axios.$get('/memory');
+    expect(memory).toEqual({ value: 1 });
+
+    // @NOTE: set 2
+    memory = await fixture.axios.$put('/memory?value=2');
+    expect(memory).toEqual({ value: 2 });
+
+    // @NOTE: read 2
+    memory = await fixture.axios.$get('/memory');
+    expect(memory).toEqual({ value: 2 });
+
+    // @NOTE: set null
     memory = await fixture.axios.$put('/memory', { value: null });
+    expect(memory).toEqual({ value: null });
+
+    // @NOTE: read null
+    memory = await fixture.axios.$get('/memory');
     expect(memory).toEqual({ value: null });
   });
 

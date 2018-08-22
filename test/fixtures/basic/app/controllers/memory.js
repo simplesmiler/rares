@@ -1,14 +1,15 @@
 module.exports = (App, Rares) => {
-  let memory = { value: null };
+  let value = null;
 
   return class MemoryController extends Rares.Controller {
 
     async show() {
-      return memory;
+      return { value };
     }
 
     async update() {
-      return memory = this.$body;
+      value = this.$params.value;
+      return { value };
     }
 
   };
