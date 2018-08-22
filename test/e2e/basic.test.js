@@ -7,7 +7,7 @@ describe('Basic', () => {
     fixture = await makeFixture('basic');
   });
 
-  test('Says 200 to existing resources', async () => {
+  test('Says 200 to the index', async () => {
     expect.assertions(2);
     const response = await fixture.axios.get('/');
     expect(response.status).toBe(200);
