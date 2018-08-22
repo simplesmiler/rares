@@ -14,13 +14,13 @@ Rares is a proper **application framework**. It gives your application code the 
 
 - Rares will be familiar if you have Ruby on Rails background
 
-# Installation
+# Getting started
 
 Install:
 
-```sh
-# npm install --save rares
-```  
+```bash
+npm install rares
+```
 
 Simple app:
 
@@ -37,16 +37,17 @@ module.exports = (App, Rares) => {
 ```js
 // app/controllers/memory.js
 module.exports = (App, Rares) => {
-  let memory = { value: null }; // @NOTE: in the real world you would have a data store
+  let value = null; // @NOTE: in the real world you would have a data store
 
   return class MemoryController extends Rares.Controller {
 
     async show() {
-      return memory;
+      return { value };
     }
 
     async update() {
-      return memory = this.$body;
+      value = this.$params.value;
+      return { value };
     }
 
   };
@@ -55,14 +56,22 @@ module.exports = (App, Rares) => {
 
 Run the app in development mode:
 
-```sh
-# npx rares dev
+```bash
+npx rares dev
+> Server running at: http://localhost:3000
 ```
 
-Perform some requests:
+Use the app:
 
-```sh
-# curl http://localhost:3000/memory
+```bash
+curl http://localhost:3000/memory
+> { "value": null }
+
+curl -X PUT http://localhost:3000/memory?value=hello
+> { "value": "hello" }
+
+curl http://localhost:3000/memory
+> { "value": "hello" }
 ```
 
 # Contribute
