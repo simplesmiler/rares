@@ -4,39 +4,35 @@ sidebar: auto
 
 # Guide
 
-This guide provides an example of building an app with Rares.
-It assumes that you have some prior knowledge of Node.js and JavaScript and have some experience with the command line.
+This guide assumes that you have some prior knowledge of Node.js and modern JavaScript and have some experience with the command line.
 
-## Getting started
-
-To get familiar with Rares, we will build a simple shop API. The stories we need to cover:
-
-- User can see available products
-- User has a shopping cart for products
-- User can checkout to create an order
-- User can see their orders
-- Manager can edit products
-- Manager can see all orders
-- Manager can update order progress
+The guide is split in three parts.
+First one goes over the basics of Rares.
+Second one provides a complete example of building an API.
+Third one fills you in on some concepts that did not fit into the example.   
 
 ## Basics
 
+In this part we will build a simplistic API to cover basic concepts of Rares.
+
 ### Installation
 
-First, create a new directory. Open it in the terminal and run `npm init` inside to set up the project.
-Then run `npm install rares` to add Rares as a dependency. Now you can run `npx rares dev` to verify that it's working.
-It will complain about some missing files, but we are about to fix that.
+1. Create a new directory and open it in the terminal.
+2. Run `npm init` to set up the Node.js project.
+3. Run `npm install rares` to add Rares as a dependency and install necessary files.
+4. Run `npx rares dev` to start Rares in development mode. It will complain about some missing files, but we are about to fix that.
 
 ### Routes
 
 A core concepts of Rares are routes, they define the API surface. Routes live in the `config/routes.js` file.
-Create this file, and let's make an echo endpoint so that we can test if our API is working at all:
+Create this file, and let's make a couple endpoints:
 
 ```js
 // config/routes.js
 module.exports = (App, Rares) => {
-  const { post } = Rares.Router;
+  const { get, post } = Rares.Router;
   return [
+    get('/', { controller: 'home', action: 'index' }),
     post('echo', { controller: 'home' }),
   ];
 };
@@ -49,16 +45,21 @@ This signature is an example of the technique called dependency injection, and y
 The `App` is the instance of your application, and the `Rares` can be seen for now as a bag of useful goodies,
 like the `Rares.Router` we are using here.
 
+The `get` route above exposes the `GET /` endpoint, and associates it with the `index` action of the `home` controller,
+and the `post` route exposes `POST /echo` with action `echo` of controller `home`.
+
 ### Controllers
 
-The `post('echo', ...)` route exposes the `POST /echo` endpoint, and associates it with the `echo` action of the `home` controller,
-which is then expected to be located at `app/controllers/home.js`.
- 
-Let's create this controller:
+While routes define the API surface, controller is what handles actual incoming requests.
+In the routes we mapped `GET /` and `POST /echo` to actions `index` and `echo` of the controller `home`,
+which is expected to be located at `app/controllers/home.js`. Let's create this controller:
 
 ```js
 // app/controllers/home.js
 module.exports = (App, Rares) => class extends Rares.Controller {
+  async index() {
+    return { message: 'Welcome!' };
+  }
   async echo() {
     return this.$params;
   }
@@ -76,7 +77,35 @@ Without going into details, anything you return or throw from the action will be
 Actions can access params as `this.$params`. Rares does not distinguish between different ways of passing params,
 but merges all params it can find into a single object. For example, a request with query string `?hello=world` is not that different from a request with JSON payload `{ "hello": "world" }`.
 
+### It's alive!
+
+Open the terminal, and run `npx rares dev`, and the app will start on [http://localhost:3000/](http://localhost:3000/).
+Now open this URL it the browser, and you will hit the `GET /` and see the response of the `index` action.
+To try the `POST /echo` endpoint you will have to use a dedicated tool like [Insomnia](https://insomnia.rest/) or [Postman](https://www.getpostman.com/).
+
+::: tip
+If you want Rares to listen for different host and port, you can override corresponding environmental variables `HOST` and `PORT`.
+One way to do this is to `npm i cross-env` and then `npx cross-env PORT=3001 rares dev` to start the app on `http://localhost:3001`.  
+:::
+
+::: tip
+App running on `localhost` can only be accessed from your computer.
+If you want it to be accessible over the network (e.g. show to a friend or run in staging/production),
+you have to use the network IP as the host, or you can use the universal `0.0.0.0` host.
+::: 
+
 ## Advanced
+
+Now that we know the basics, let's practice by building a shop API. The stories we need to cover:
+
+- User can see available products
+- User has a shopping cart for products
+- User can sign up and authenticate
+- Authenticated user can checkout to create an order
+- Authenticated user can see their orders
+- Manager can edit products
+- Manager can see all orders
+- Manager can update order progress
 
 ### Database and migrations (WIP)
 
@@ -150,7 +179,7 @@ You can also see `productParams`, and it is used by the default implementation o
 
 ## Extra credits
 
-Things that are not fit into the guide yet. 
+Things that are did fit into the example of building the shop API. 
 
 ### Responses (WIP)
 
@@ -213,7 +242,7 @@ module.exports = (App, Rares) => class extends Rares.Controller {
   static $setup() {
     this.$aroundAction(function(fn) {
       const id = nextRequestId++; // @NOTE: make unique id to track the request
-      console.log(`${id}: Controller: ${this.$controller}#${this.$action}`); 
+      console.log(`${id}: Handler: ${this.$controller}#${this.$action}`); 
       console.log(`${id}: Params:`, this.$params);
       try {
         const response = await fn(); // @NOTE: call original action
@@ -231,14 +260,31 @@ module.exports = (App, Rares) => class extends Rares.Controller {
 
 Now every action of this controller will be logged. This is a very powerful mechanism, especially in combination with the controller inheritance. Besides the generic `$aroundAction`, there are also three more specialized hooks: `$beforeAction`, `$afterAction`, and `$rescueFrom`.   
 
-### Nesting (WIP)
+### Scoping and namespacing (WIP)
 
-@TODO: Talk about scopes and namespaces.
+Sometimes you want to scope endpoints under a certain path without affecting controller paths.
+Common use case is scoping API endpoints under `/api`. 
+
+You can use `scope` to do that:
+
+```js
+module.exports = (App, Rares) => {
+  const { scope, get } = Rares.Router;
+  return [
+    scope('api', [
+      get('/', { controller: 'home', action: 'index' }),
+      get('alpha', { controller: 'home' }),
+    ]),
+  ];
+};
+```
+
+@TODO(v0.3): Talk about namespaces and four different outcomes of scope * namespace.
 
 ### Application and environment (WIP)
 
-@TODO: Talk about configuration hooks.
+@TODO(v0.3): Talk about configuration hooks.
 
 ### Loader (WIP)
 
-@TODO: Talk more about the signature, loading and `$setup`.
+@TODO(v0.2): Talk about the signature, loading and `$setup`.
