@@ -1,7 +1,7 @@
 ---
 home: true
 actionText: Get Started →
-actionLink: /guide/
+actionLink: /guide.html
 features:
 - title: Simple and easy
   details: Install a single dependency and start building, no more steps required.
