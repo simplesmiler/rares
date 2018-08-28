@@ -1,10 +1,14 @@
 const { makeFixture } = require('../utils');
 
 describe('Basic', () => {
-  let fixture;
+  let fixture = null;
 
   beforeAll(async () => {
     fixture = await makeFixture('basic');
+  });
+
+  afterAll(async () => {
+    await fixture.stop();
   });
 
   test('Says 200 to the index', async () => {
@@ -57,9 +61,5 @@ describe('Basic', () => {
     // @NOTE: read null
     memory = await fixture.axios.$get('/memory');
     expect(memory).toEqual({ value: null });
-  });
-
-  afterAll(async () => {
-    await fixture.stop();
   });
 });
