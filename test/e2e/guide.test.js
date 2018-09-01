@@ -55,6 +55,21 @@ describe('Guide', () => {
       await fixture.stop();
     });
 
+    test('Responses', async () => {
+      expect.assertions(4);
+      let response = null;
+
+      response = await fixture.axios.get('/response');
+      expect(response.status).toBe(200);
+
+      response = await fixture.axios.get('/response?status=204');
+      expect(response.status).toBe(204);
+
+      response = await fixture.axios.get('/response?headers[x-demo]=Sample');
+      expect(response.status).toBe(200);
+      expect(response.headers).toMatchObject({ 'x-demo': 'Sample' });
+    });
+
     test('Action hooks', async () => {
       expect.assertions(10 - 2);
       let response = null;

@@ -9,6 +9,9 @@ module.exports = (App, Rares) => {
       get('rescue', { controller: 'hooks' }),
     ]),
 
+    // @SECTION: responses
+    get('response', { controller: 'responses', action: 'index' }),
+
     // @SECTION: nesting
     scope('api', [
       get('/', { controller: 'home', action: 'index' }),
