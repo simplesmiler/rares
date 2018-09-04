@@ -1,5 +1,5 @@
 module.exports = (App, Rares) => {
-  const { scope, get } = Rares.Router;
+  const { scope, get, put } = Rares.Router;
   return [
     // @SECTION: action hooks
     scope('hooks', [
@@ -11,6 +11,12 @@ module.exports = (App, Rares) => {
 
     // @SECTION: responses
     get('response', { controller: 'responses', action: 'index' }),
+
+    // @SECTION: secrets and session
+    scope('session', [
+      put('store', { controller: 'session' }),
+      get('load', { controller: 'session' }),
+    ]),
 
     // @SECTION: nesting
     scope('api', [

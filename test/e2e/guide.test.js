@@ -70,6 +70,66 @@ describe('Guide', () => {
       expect(response.headers).toMatchObject({ 'x-demo': 'Sample' });
     });
 
+    test('Secrets and session', async () => {
+      expect.assertions(17 - 6);
+      let response = null;
+
+      response = await fixture.axios.$get('/session/load?key=str');
+      expect(response).toEqual({ value: null });
+
+      response = await fixture.axios.$put('/session/store?key=str&value=some-string');
+      expect(response).toEqual({ value: 'some-string' });
+
+      response = await fixture.axios.$get('/session/load?key=str');
+      expect(response).toEqual({ value: 'some-string' });
+
+      // @NOTE: yar currently has an issue with falsy values, converting them to null, so all tests with falsy values are commended out
+      // @REFERNCE: https://github.com/hapijs/yar/issues/121
+      // @TODO: uncomment tests with falsy values bellow once the yar issue is resolved
+
+      // response = await fixture.axios.$put('/session/store?key=str&value=');
+      // expect(response).toEqual({ value: '' });
+
+      // response = await fixture.axios.$get('/session/load?key=str');
+      // expect(response).toEqual({ value: '' });
+
+      response = await fixture.axios.$get('/session/load?key=num');
+      expect(response).toEqual({ value: null });
+
+      response = await fixture.axios.$put('/session/store?key=num&value=123');
+      expect(response).toEqual({ value: 123 });
+
+      response = await fixture.axios.$get('/session/load?key=num');
+      expect(response).toEqual({ value: 123 });
+
+      response = await fixture.axios.$put('/session/store?key=num&value=-123');
+      expect(response).toEqual({ value: -123 });
+
+      response = await fixture.axios.$get('/session/load?key=num');
+      expect(response).toEqual({ value: -123 });
+
+      // response = await fixture.axios.$put('/session/store?key=num&value=0');
+      // expect(response).toEqual({ value: 0 });
+      //
+      // response = await fixture.axios.$get('/session/load?key=num');
+      // expect(response).toEqual({ value: 0 });
+
+      response = await fixture.axios.$get('/session/load?key=bool');
+      expect(response).toEqual({ value: null });
+
+      response = await fixture.axios.$put('/session/store?key=bool&value=true');
+      expect(response).toEqual({ value: true });
+
+      response = await fixture.axios.$get('/session/load?key=bool');
+      expect(response).toEqual({ value: true });
+
+      // response = await fixture.axios.$put('/session/store?key=bool&value=false');
+      // expect(response).toEqual({ value: false });
+      //
+      // response = await fixture.axios.$get('/session/load?key=bool');
+      // expect(response).toEqual({ value: false });
+    });
+
     test('Action hooks', async () => {
       expect.assertions(10 - 2);
       let response = null;
@@ -119,7 +179,7 @@ describe('Guide', () => {
       });
     });
 
-    test('Nesting', async () => {
+    test('Scoping and namespacing', async () => {
       expect.assertions(4);
       let response = null;
 
