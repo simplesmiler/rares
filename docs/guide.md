@@ -204,11 +204,11 @@ To associate data with the current client, Rares provide you with a storage util
 ```js
 module.exports = (App, Rares) => class extends Rares.Controller {
   async store() {
-    await this.$store('value', this.$params.value);
-    return { value: this.$params.value }; 
+    await this.$store(this.$params.key, this.$params.value);
+    return { value: await this.$load(this.$params.key) }; 
   }
   async load() {
-    return { value: await this.$load('value') };
+    return { value: await this.$load(this.$params.key) };
   }
 };
 ```
@@ -222,6 +222,9 @@ module.exports = (App, Rares) => {
     development: {
       secretKeyBase: 'never-use-this-key-base-in-production',
     },
+    test: {
+      secretKeyBase: 'never-use-this-key-base-in-production',
+    },
     production: {
       secretKeyBase: process.env.SECRET_KEY_BASE,
     },
@@ -230,6 +233,10 @@ module.exports = (App, Rares) => {
 ```
 
 You can store arbitrary `JSON.stringify`-able data. Under the hood, the data is stored in encrypted user cookie, so it will survive the server restart without a need to a session storage like Redis.
+
+### Authentication and authorization (WIP)
+
+@TODO(v0.3): Talk about it after documenting models, integrate into the shop example.
 
 ### Action hooks
 
@@ -240,7 +247,7 @@ let nextRequestId = 1;
 
 module.exports = (App, Rares) => class extends Rares.Controller {
   static $setup() {
-    this.$aroundAction(function(fn) {
+    this.$aroundAction(async function(fn) {
       const id = nextRequestId++; // @NOTE: make unique id to track the request
       console.log(`${id}: Handler: ${this.$controller}#${this.$action}`); 
       console.log(`${id}: Params:`, this.$params);
