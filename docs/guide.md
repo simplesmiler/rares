@@ -22,6 +22,9 @@ In this part we will build a simplistic API to cover basic concepts of Rares.
 3. Run `npm install rares` to add Rares as a dependency and install necessary files.
 4. Run `npx rares dev` to start Rares in development mode. It will complain about some missing files, but we are about to fix that.
 
+@TODO(unscheduled): Talk about `npx rares init` which would create the necessary files.
+@TODO(unscheduled): Talk about `rares.config.js` and other configuration.
+
 ### Routes
 
 A core concepts of Rares are routes, they define the API surface. Routes live in the `config/routes.js` file.
@@ -40,10 +43,8 @@ module.exports = (App, Rares) => {
 
 As you can see, we export a function with `(App, Rares) -> Value` signature, with `Value` in this case being an array.
 The exact structure of this array is an implementation detail, so you should not worry about it too much.
-
-This signature is an example of the technique called dependency injection, and you will see this signature many times when working with Rares.
-The `App` is the instance of your application, and the `Rares` can be seen for now as a bag of useful goodies,
-like the `Rares.Router` we are using here.
+And the signature allows us to access things without requiring them directly, like the `Rares.Router` we are accessing here.
+If you want details, read the [Loading](#loading) section.
 
 The `get` route above exposes the `GET /` endpoint, and associates it with the `index` action of the `home` controller,
 and the `post` route exposes `POST /echo` with action `echo` of controller `home`.
@@ -202,6 +203,7 @@ module.exports = (App, Rares) => class extends Rares.Controller {
 To associate data with the current client, Rares provide you with a storage utility:
 
 ```js
+// app/controllers/session.js
 module.exports = (App, Rares) => class extends Rares.Controller {
   async store() {
     await this.$store(this.$params.key, this.$params.value);
@@ -237,34 +239,94 @@ module.exports = (App, Rares) => {
 
 @TODO(v0.3): Talk about it after documenting models, integrate into the shop example.
 
+### Loading
+
+Pretty much every file you write in Rares will have the special `(App, Rares) => Value` signature.
+
+This is the way Rares implements it's custom module loading mechanism.
+The `App` is the instance of your application, and the `Rares` contains everything that does not fit on the instance.
+
+You can load other modules with `App.Load('path/to/module')` with paths relative to the `/app` folder.
+
+Benefits of this approach:
+
+- Modules do not depend on singletons, making them really easy to test.
+- Exported values are auto-enhanced. For classes, the static `$setup` method is called during loading. 
+- @TODO(unscheduled): Code is hot-reloaded when running in development mode.
+
+@TODO(unscheduled): Talk details about `$setup`.
+
 ### Action hooks
 
-To perform something that does not belong to a specific action (e.g. generic logging and analytics), you can use action hooks:
+To perform something that does not belong to a single action, you can use action hooks:
 
 ```js
-let nextRequestId = 1;
-
+// app/controllers/items.js
 module.exports = (App, Rares) => class extends Rares.Controller {
   static $setup() {
-    this.$aroundAction(async function(fn) {
-      const id = nextRequestId++; // @NOTE: make unique id to track the request
-      console.log(`${id}: Handler: ${this.$controller}#${this.$action}`); 
-      console.log(`${id}: Params:`, this.$params);
-      try {
-        const response = await fn(); // @NOTE: call original action
-        console.log(`${id}: Success:`, response);
-        return response;
-      }
-      catch (err) {
-        console.log(`${id}: Fail:`, err);
-        throw err;
-      }
-    });
+    this.$beforeAction('preloadData');
+  }
+  async index() {
+    return { items: this.items };
+  }
+  async show() {
+    return { item: this.items.find(item => item.id === params.itemId) };
+  }
+  // private
+  async preloadItems() {
+    this.items = [
+      { id: 1, name: 'Apple' },
+      { id: 2, name: 'Banana' },
+    ];
   }
 };
 ```
 
-Now every action of this controller will be logged. This is a very powerful mechanism, especially in combination with the controller inheritance. Besides the generic `$aroundAction`, there are also three more specialized hooks: `$beforeAction`, `$afterAction`, and `$rescueFrom`.   
+Paired with `$beforeAction`, there is `$afterAction`.
+Also there is `$rescueFrom` for recovering from exceptions in actions,
+and generic `$aroundAction`, with which you can do all of the above.
+
+### Controller inheritance
+
+Besides extending the base `Rares.Controller`, you can extend your own controllers.
+
+```js
+// app/controllers/application.js
+let nextRequestId = 1;
+module.exports = (App, Rares) => class extends Rares.Controller {
+  static $setup() {
+    this.$aroundAction('wrapAction');
+  }
+  // private
+  async wrapAction(fn) {
+    const id = nextRequestId++; // @NOTE: make unique id to track the request in logs
+    console.log(`${id}: Handler: ${this.$controller}#${this.$action}`); 
+    console.log(`${id}: Params:`, this.$params);
+    // @NOTE: catch exception to log them
+    try {
+      const response = await fn(); // @NOTE: call original action
+      console.log(`${id}: Success:`, response);
+      return response;
+    }
+    catch (err) {
+      console.log(`${id}: Fail:`, err);
+      throw err;
+    }
+  }
+};
+```
+
+```js
+// app/controllers/index.js
+module.exports = (App, Rares) => class extends App.Load('controllers/application') {
+  async index() {
+    return { message: 'Hello!' }; 
+  }
+};
+```
+
+Now every action of every controller that extends from the `application` controller will be logged.
+As you see, combination of action hooks and controller inheritance is very powerful.
 
 ### Scoping and namespacing (WIP)
 
@@ -274,6 +336,7 @@ Common use case is scoping API endpoints under `/api`.
 You can use `scope` to do that:
 
 ```js
+// config/routes.js
 module.exports = (App, Rares) => {
   const { scope, get } = Rares.Router;
   return [
@@ -290,7 +353,3 @@ module.exports = (App, Rares) => {
 ### Application and environment (WIP)
 
 @TODO(v0.3): Talk about configuration hooks.
-
-### Loader (WIP)
-
-@TODO(v0.2): Talk about the signature, loading and `$setup`.
