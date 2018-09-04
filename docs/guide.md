@@ -213,6 +213,7 @@ module.exports = (App, Rares) => class extends Rares.Controller {
 };
 ```
 
+You can store arbitrary `JSON.stringify`-able data. Under the hood, the data is stored in encrypted user cookie, so it will survive the server restart without a need to a session storage like Redis.
 But for this to work, you have to provide a `secretKeyBase` in your `config/secrets.js` file:
 
 ```js
@@ -231,8 +232,6 @@ module.exports = (App, Rares) => {
   };
 };
 ```
-
-You can store arbitrary `JSON.stringify`-able data. Under the hood, the data is stored in encrypted user cookie, so it will survive the server restart without a need to a session storage like Redis.
 
 ### Authentication and authorization (WIP)
 
