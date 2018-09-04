@@ -2,6 +2,8 @@ const _ = require('lodash');
 const path = require('path');
 const getPort = require('get-port');
 const axios = require('axios');
+const tough = require('tough-cookie');
+const { default: axiosCookieJarSupport } = require('axios-cookiejar-support');
 const Hapi = require('hapi');
 const Rares = require('..');
 const HapiRares = require('../packages/hapi-rares');
@@ -11,6 +13,8 @@ module.exports = {
 };
 
 // === //
+
+axiosCookieJarSupport(axios);
 
 async function makeFixture(name, options) {
   const dir = path.resolve(__dirname, 'fixtures', name);
@@ -54,7 +58,8 @@ for (const name of ['options', 'head', 'get', 'post', 'put', 'patch', 'delete'])
 }
 
 async function makeAxiosClient(baseURL) {
-  const client = axios.create({ baseURL });
+  const cookieJar = new tough.CookieJar();
+  const client = axios.create({ baseURL, jar: cookieJar, withCredentials: true });
   Object.assign(client, mixin);
   return client;
 }
