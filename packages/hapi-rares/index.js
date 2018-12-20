@@ -16,7 +16,7 @@ module.exports = {
       App.server = server;
 
       await server.register(_.compact([
-        App.secrets && App.secrets.secretKeyBase && {
+        App.secrets && {
           plugin: require('yar'),
           options: {
             cookieOptions: {

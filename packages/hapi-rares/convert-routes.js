@@ -6,7 +6,7 @@ const Boom = require('boom');
 module.exports = function convert(server, App) {
   const Rares = App.constructor;
 
-  if (App.secrets && App.secrets.secretKeyBase) {
+  if (App.secrets) {
     Rares.Controller.prototype.$store = async function(key, value) {
       this.$request.yar.set(key, value);
     };
