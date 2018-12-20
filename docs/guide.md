@@ -110,11 +110,11 @@ Now that we know the basics, let's practice by building a shop API. The stories 
 
 ### Database and migrations (WIP)
 
-@TODO(v0.2): Talk about database configuration and migrations.
+@TODO(v0.3): Talk about database configuration and migrations.
 
 ### Models and abilities (WIP)
 
-@TODO(v0.2): Talk about models and abilities.
+@TODO(v0.3): Talk about models and abilities.
 
 ### Resource Routes
 
@@ -148,7 +148,7 @@ You can also add your own endpoints, but we will talk about that later.
 
 ### Resource Controllers (WIP)
 
-@TODO(v0.2): Review the example and explanation below.
+@TODO(v0.3): Review the example and explanation below.
 
 Now on to products controller:
 
@@ -176,15 +176,15 @@ One such extension is `$resource`, which does:
 
 You can also see `productParams`, and it is used by the default implementation of the `new`, `create` and `update` actions.
 
-@TODO(v0.2): Finish the shop example.
+@TODO(v0.3): Finish the shop example.
 
 ## Extra credits
 
-Things that are did fit into the example of building the shop API. 
+Things that did not fit into the example of building the shop API. 
 
 ### Responses (WIP)
 
-@TODO(v0.3): Review after making response tool better.
+@TODO(v0.4): Review after making response tool better.
 
 To return the result with specific headers or specific HTTP status, Rares provides you with response utility:
 
@@ -237,7 +237,7 @@ module.exports = (App, Rares) => {
 
 ### Authentication and authorization (WIP)
 
-@TODO(v0.3): Talk about it after documenting models, integrate into the shop example.
+@TODO(v0.4): Talk about it after documenting models, integrate into the shop example.
 
 ### Loading
 
@@ -348,8 +348,8 @@ module.exports = (App, Rares) => {
 };
 ```
 
-@TODO(v0.3): Talk about namespaces and four different outcomes of scope * namespace.
+@TODO(v0.4): Talk about namespaces and four different outcomes of scope * namespace.
 
 ### Application and environment (WIP)
 
-@TODO(v0.3): Talk about configuration hooks.
+@TODO(v0.4): Talk about configuration hooks.

@@ -4,7 +4,7 @@ module.exports = (App, Rares) => {
     static $setup() {
       this.$aroundAction('aroundAction', { only: 'around' });
       this.$beforeAction('beforeAction', { only: 'before' });
-      // this.$afterAction('afterAction', { only: 'after' }); // @FIXME(v0.3): this test is currently broken, figure out if it should work or not
+      // this.$afterAction('afterAction', { only: 'after' }); // @FIXME(v0.4): this test is currently broken, figure out if it should work or not
       this.$rescueFrom('rescueFrom', { only: 'rescue' });
     }
 

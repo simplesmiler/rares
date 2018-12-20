@@ -163,7 +163,7 @@ describe('Guide', () => {
       expect(response.status).toBe(200);
       expect(response.data).toEqual({ from: 'hooks#beforeAction' });
 
-      // @FIXME(v0.3): this test is currently broken, figure out if it should work or not
+      // @FIXME(v0.4): this test is currently broken, figure out if it should work or not
       // response = await fixture.axios.get('/hooks/after');
       // expect(response.status).toBe(200);
       // expect(response.data).toEqual({
