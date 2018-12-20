@@ -22,8 +22,9 @@ In this part we will build a simplistic API to cover basic concepts of Rares.
 3. Run `npm install rares` to add Rares as a dependency and install necessary files.
 4. Run `npx rares dev` to start Rares in development mode. It will complain about some missing files, but we are about to fix that.
 
-@TODO(unscheduled): Talk about `npx rares init` which would create the necessary files.
-@TODO(unscheduled): Talk about `rares.config.js` and other configuration.
+<!--
+@TODO(0.4): Talk about `npx rares init` which would create the necessary files.
+-->
 
 ### Routes
 
@@ -95,6 +96,7 @@ If you want it to be accessible over the network (e.g. show to a friend or run i
 you have to use the network IP as the host, or you can use the universal `0.0.0.0` host.
 ::: 
 
+<!--
 ## Advanced
 
 Now that we know the basics, let's practice by building a shop API. The stories we need to cover:
@@ -177,18 +179,58 @@ One such extension is `$resource`, which does:
 You can also see `productParams`, and it is used by the default implementation of the `new`, `create` and `update` actions.
 
 @TODO(v0.3): Finish the shop example.
+-->
 
 ## Extra credits
 
-Things that did not fit into the example of building the shop API. 
+### Loading
 
-### Responses (WIP)
+Pretty much every file you write in Rares will have the special `(App, Rares) => Value` signature.
 
+This is the way Rares implements it's custom module loading mechanism.
+The `App` is the instance of your application, and the `Rares` contains everything that does not fit on the instance.
+
+You can load other modules with `App.Load('path/to/module')` with paths relative to the `/app` folder.
+
+Benefits of this approach:
+
+- Modules do not depend on singletons, making them really easy to test.
+- Exported values can be auto-enhanced appropriately. 
+- Code can be hot-reloaded when running in development mode.
+
+### Config
+
+You can configure certain aspects of Rares with the `rares.config.js` file placed in the root directory of your application:
+
+```js
+// rares.config.js
+module.exports = async (App, Rares) => {
+  return {
+    // Override the path to the root directory.
+    // Do not do this unless you need to do something unconventional.
+    dir: process.cwd(),
+    
+    // Whether to complain in stdout when there are non-critical issues.
+    whiny: true,
+
+    // Whether to enable or disabled certain features.
+    features: {
+      secrets: false,
+    },
+  };
+};
+```
+ 
+### Responses
+
+<!--
 @TODO(v0.4): Review after making response tool better.
+-->
 
 To return the result with specific headers or specific HTTP status, Rares provides you with response utility:
 
 ```js
+// app/controllers/demo.js
 module.exports = (App, Rares) => class extends Rares.Controller {
   async index() {
     const message = 'Demoing http statuses and headers';
@@ -198,29 +240,27 @@ module.exports = (App, Rares) => class extends Rares.Controller {
 };
 ```
 
-### Secrets and sessions
+### Environment
 
-To associate data with the current client, Rares provide you with a storage utility:
+Environment represents circumstances, under which the application is running.
+Application can act differently based on this value.
+Commonly used values are `production`, `development`, and `test`.
 
-```js
-// app/controllers/session.js
-module.exports = (App, Rares) => class extends Rares.Controller {
-  async store() {
-    await this.$store(this.$params.key, this.$params.value);
-    return { value: await this.$load(this.$params.key) }; 
-  }
-  async load() {
-    return { value: await this.$load(this.$params.key) };
-  }
-};
-```
+Environment value can be accesses as `App.env`.
 
-You can store arbitrary `JSON.stringify`-able data. Under the hood, the data is stored in encrypted user cookie, so it will survive the server restart without a need to a session storage like Redis.
-But for this to work, you have to provide a `secretKeyBase` in your `config/secrets.js` file:
+::: tip
+When running the application, you can set this value with `NODE_ENV` environment variable.
+When not specified, it defaults to `development`.
+:::
+
+### Secrets
+
+Most applications need to store credentials to third party services, access tokens, secure keys.
+They are supposed to live in the `config/secrets.js` file:
 
 ```js
 // config/secrets.js
-module.exports = (App, Rares) => {
+module.exports = async (App, Rares) => {
   return {
     development: {
       secretKeyBase: 'never-use-this-key-base-in-production',
@@ -235,26 +275,59 @@ module.exports = (App, Rares) => {
 };
 ```
 
+This feature is experimental, and needs to be enabled with a flag:
+
+```js
+// rares.config.js
+module.exports = {
+  features: {
+    secrets: true,
+  },
+};
+```
+
+When secrets are enabled, the `secretKeyBase` secret is required, because it is used internally for other features (e.g. sessions).
+
+In runtime, secrets are available as `App.secrets`.
+
+::: tip
+For security reasons, you should never commit this file to the source code repository.
+But you can make a template of it with fake or empty values, call it `secrets.example.js` and commit that.
+:::
+
+::: tip
+It is often a good idea to fetch values from somewhere rather then to store directly.
+The "somewhere" may be environment variables, third party secrets store, encrypted files, and so on.
+:::
+
+### Sessions
+
+To associate data with clients, Rares provide you with a storage utility:
+
+```js
+// app/controllers/session.js
+module.exports = (App, Rares) => class extends Rares.Controller {
+  async store() {
+    await this.$store(this.$params.key, this.$params.value);
+    return { value: await this.$load(this.$params.key) }; 
+  }
+  async load() {
+    return { value: await this.$load(this.$params.key) };
+  }
+};
+```
+
+The values are stored per client, and can be any `JSON.stringify`-able data. Under the hood, the data is stored in encrypted user cookie, so it will survive the server restart without a need to a session storage like Redis.
+
+::: tip
+Sessions utility depends on secrets, so you have to enable them in the config.
+:::
+
+<!--
 ### Authentication and authorization (WIP)
 
 @TODO(v0.4): Talk about it after documenting models, integrate into the shop example.
-
-### Loading
-
-Pretty much every file you write in Rares will have the special `(App, Rares) => Value` signature.
-
-This is the way Rares implements it's custom module loading mechanism.
-The `App` is the instance of your application, and the `Rares` contains everything that does not fit on the instance.
-
-You can load other modules with `App.Load('path/to/module')` with paths relative to the `/app` folder.
-
-Benefits of this approach:
-
-- Modules do not depend on singletons, making them really easy to test.
-- Exported values are auto-enhanced. For classes, the static `$setup` method is called during loading. 
-- @TODO(unscheduled): Code is hot-reloaded when running in development mode.
-
-@TODO(unscheduled): Talk details about `$setup`.
+-->
 
 ### Action hooks
 
@@ -284,7 +357,7 @@ module.exports = (App, Rares) => class extends Rares.Controller {
 
 Paired with `$beforeAction`, there is `$afterAction`.
 Also there is `$rescueFrom` for recovering from exceptions in actions,
-and generic `$aroundAction`, with which you can do all of the above.
+and generic `$aroundAction`, with which you can do all of the above.  
 
 ### Controller inheritance
 
@@ -328,7 +401,7 @@ module.exports = (App, Rares) => class extends App.Load('controllers/application
 Now every action of every controller that extends from the `application` controller will be logged.
 As you see, combination of action hooks and controller inheritance is very powerful.
 
-### Scoping and namespacing (WIP)
+### Scoping
 
 Sometimes you want to scope endpoints under a certain path without affecting controller paths.
 Common use case is scoping API endpoints under `/api`. 
@@ -348,8 +421,12 @@ module.exports = (App, Rares) => {
 };
 ```
 
-@TODO(v0.4): Talk about namespaces and four different outcomes of scope * namespace.
+<!--
+@TODO(0.3): Talk about namespaces and four different outcomes of scope * namespace.
+-->
 
-### Application and environment (WIP)
+<!--
+### Bootstrap (WIP)
 
-@TODO(v0.4): Talk about configuration hooks.
+@TODO(v0.4): Talk about bootstrap.
+-->
