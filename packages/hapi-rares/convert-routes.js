@@ -30,17 +30,9 @@ module.exports = function convert(server, App) {
   Rares.Router.$walk(App.routes, entry => {
     const { controller: controllerName, action: actionName, model: modelName, path, method } = entry;
 
-    const ControllerClass = App.Load('controllers/' + controllerName);
+    let ControllerClass;
 
-    if (ControllerClass == null) {
-      throw new Error(`Controller '${controllerName}' does not seem to export anything`);
-    }
-
-    if (ControllerClass.$doSetup == null) {
-      throw new Error(`Controller '${controllerName}' does not seem to extend Tails.Controller`);
-    }
-
-    ControllerClass.$doSetup();
+    // @TODO: In build/start mode load the class here
 
     routes.push({
       path,
@@ -50,6 +42,9 @@ module.exports = function convert(server, App) {
         const query = request.url.search ? qs.parse(request.url.search.slice(1), { decoder: decode }) : {};
         const segments = request.params;
         const params = _.defaultsDeep(null, segments, query, body);
+
+        // @TODO: Do this only in dev mode
+        ControllerClass = App.Load('controllers/' + controllerName);
 
         const controller = new ControllerClass({
           // @NOTE: generic application stuff
