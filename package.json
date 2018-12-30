@@ -13,7 +13,7 @@
   "scripts": {
     "docs:dev": "vuepress dev docs",
     "docs:build": "vuepress build docs",
-    "lint": "eslint . bin/**",
+    "lint": "eslint . bin/** --ignore-path .gitignore",
     "test": "npm run lint && npm audit && npm run test:e2e",
     "test:e2e": "jest test/e2e"
   },
