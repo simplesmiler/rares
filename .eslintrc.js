@@ -23,6 +23,7 @@ module.exports = {
     'eqeqeq': ['error', 'always', { 'null': 'ignore' }],
     'no-cond-assign': 'warn',
     'no-unused-vars': 'warn',
+    'newline-per-chained-call': 'warn',
 
     // @NOTE: irrelevant
     'import/no-commonjs': 'off',
