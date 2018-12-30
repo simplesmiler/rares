@@ -2,6 +2,7 @@ const _ = require('lodash');
 const qs = require('qs');
 const Sequelize = require('sequelize');
 const Boom = require('boom');
+const pathToRegexp = require('path-to-regexp');
 
 module.exports = function convert(server, App) {
   const Rares = App.constructor;
@@ -30,11 +31,14 @@ module.exports = function convert(server, App) {
   Rares.Router.$walk(App.routes, entry => {
     const { controller: controllerName, action: actionName, model: modelName, path, method } = entry;
 
+    // @NOTE: Hapi uses different syntax for paths, so we have to convert
+    const hapiPath = convertPath(path);
+
     // @TODO: In build/start mode load the class here
     let ControllerClass;
 
     routes.push({
-      path,
+      path: hapiPath,
       method,
       async handler(request, h) {
         const body = request.payload;
@@ -131,4 +135,20 @@ function decode(str) {
   catch (err) {
     return str;
   }
+}
+
+function convertPath(path) {
+  // @NOTE: Collect participating params
+  const keys = [];
+  pathToRegexp(path, keys);
+
+  // @NOTE: Wrap param names in brackets
+  const values = {};
+  for (const key of keys) {
+    values[key.name] = '{' + key.name + '}';
+  }
+
+  // @NOTE: Use bracketed names as values
+  const toPath = pathToRegexp.compile(path);
+  return toPath(values, { encode: (value, token) => value });
 }
