@@ -128,7 +128,7 @@ for (const backend of backends) {
       });
 
       test('Action hooks', async () => {
-        expect.assertions(10 - 2);
+        expect.assertions(10);
         let response = null;
 
         // @TODO: cover variation in hooks and rescues, namely:
@@ -160,13 +160,12 @@ for (const backend of backends) {
         expect(response.status).toBe(200);
         expect(response.data).toEqual({ from: 'hooks#beforeAction' });
 
-        // @FIXME(v0.4): this test is currently broken, figure out if it should work or not
-        // response = await fixture.axios.get('/hooks/after');
-        // expect(response.status).toBe(200);
-        // expect(response.data).toEqual({
-        //   original: { from: 'hooks#after' },
-        //   modified: { from: 'hooks#afterAction' },
-        // });
+        // @NOTE: This test verifies, that afterAction hooks do not modify the response
+        response = await fixture.axios.get('/hooks/after');
+        expect(response.status).toBe(200);
+        expect(response.data).toEqual({
+          from: 'hooks#after',
+        });
 
         response = await fixture.axios.get('/hooks/rescue');
         expect(response.status).toBe(200);
