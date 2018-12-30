@@ -6,10 +6,11 @@ const tough = require('tough-cookie');
 const { default: axiosCookieJarSupport } = require('axios-cookiejar-support');
 const Rares = require('rares');
 const HapiRaresServer = require('hapi-rares/server');
+const ExpressRaresServer = require('express-rares/server');
 
 module.exports = {
   makeFixture,
-  backends: ['hapi'],
+  backends: ['hapi', 'express'],
 };
 
 // === //
@@ -28,6 +29,9 @@ async function makeFixture(name, options) {
   let Backend;
   if (backend === 'hapi') {
     Backend = HapiRaresServer;
+  }
+  else if (backend === 'express') {
+    Backend = ExpressRaresServer;
   }
   else {
     throw new Error(`Unexpected situation, backend = ${backend}`);
