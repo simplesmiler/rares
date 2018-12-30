@@ -21,7 +21,7 @@ module.exports = function convert(server, App) {
   }
   else {
     Rares.Controller.prototype.$store = Rares.Controller.prototype.$load = Rares.Controller.prototype.$clear = async function() {
-      throw new Error(`If you want to use sessions make sure to include 'secretKeyBase' in the secrets file`);
+      throw new Error(`If you want to use sessions make sure to enable secrets`);
     };
   }
 
@@ -30,9 +30,8 @@ module.exports = function convert(server, App) {
   Rares.Router.$walk(App.routes, entry => {
     const { controller: controllerName, action: actionName, model: modelName, path, method } = entry;
 
-    let ControllerClass;
-
     // @TODO: In build/start mode load the class here
+    let ControllerClass;
 
     routes.push({
       path,
@@ -64,7 +63,7 @@ module.exports = function convert(server, App) {
 
         try {
           const result = await controller.$run();
-          const response = h.response(JSON.stringify(result.value));
+          const response = h.response(JSON.stringify(result.value)); // @FIXME: This is awful
 
           const status = _.get(result.opts, 'status');
           if (status != null) {
@@ -93,8 +92,8 @@ module.exports = function convert(server, App) {
           }
 
           // @NOTE: map database errors to http errors
-          // @NOTE: it's important to catch specific errors firts, and then generic,
-          //        otherwise generic errors with "shadow" specific ones
+          // @NOTE: it's important to catch specific errors first, and then generic,
+          //        otherwise generic errors will "shadow" specific ones
           else if (err instanceof Sequelize.EmptyResultError) {
             throw Boom.boomify(err, { statusCode: 404 });
           }
