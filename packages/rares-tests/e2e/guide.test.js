@@ -84,10 +84,6 @@ for (const backend of backends) {
         response = await fixture.axios.$get('/session/load?key=str');
         expect(response).toEqual({ value: 'some-string' });
 
-        // @NOTE: yar currently has an issue with falsy values, converting them to null, so all tests with falsy values are commended out
-        // @REFERNCE: https://github.com/hapijs/yar/issues/121
-        // @TODO: uncomment tests with falsy values bellow once the yar issue is resolved
-
         response = await fixture.axios.$put('/session/store?key=str&value=');
         expect(response).toEqual({ value: '' });
 
