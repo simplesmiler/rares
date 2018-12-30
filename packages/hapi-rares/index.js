@@ -1,17 +1,20 @@
-const convertRoutes = require('./convert-routes');
+// @DOC: This file exports a hapi plugin
+
 const _ = require('lodash');
+const convertRoutes = require('./convert-routes');
 
 module.exports = {
 
   name: 'hapi-rares',
 
   async register(server, opts) {
-    const { App, Rares } = opts;
+    const App = _.get(opts, 'App', null);
+    const Rares = _.get(opts, 'Rares', null);
     opts = _.omit(opts, ['App', 'Rares']);
 
     if (!App && !Rares) throw new Error('Expected either App or Rares to be in the plugin options');
 
-    async function mount(server, App) {
+    async function mount(App) {
       if (App.server) throw new Error('This app is already mounted');
       App.server = server;
 
@@ -32,11 +35,11 @@ module.exports = {
     }
 
     if (App) {
-      await mount(server, App);
+      await mount(App);
     }
     else {
       await Rares.create(opts, async App => {
-        await mount(server, App);
+        await mount(App);
       });
     }
   },

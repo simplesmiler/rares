@@ -55,7 +55,7 @@ module.exports = function convert(server, App) {
           $app: App,
 
           // @NOTE: hapi-specific request stuff
-          $server: server,
+          $server: App.server,
           $request: request,
 
           // @NOTE: generic request stuff
