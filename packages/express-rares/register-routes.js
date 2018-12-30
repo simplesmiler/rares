@@ -51,7 +51,6 @@ module.exports = function register(expressRouter, App) {
         $app: App,
 
         // @NOTE: express-specific request stuff
-        $server: App.server,
         $request: req,
 
         // @NOTE: generic request stuff

@@ -15,7 +15,8 @@ module.exports = async function ExpressRares(opts) {
   const expressRouter = Router();
 
   async function mount(App) {
-    App.server = null; // @FIXME: Express does not provide this
+    if (App.$mounted) throw new Error('This app is already mounted');
+    App.$mounted = true;
 
     expressRouter.use(BodyParser.json());
     expressRouter.use(BodyParser.urlencoded({ extended: true }));

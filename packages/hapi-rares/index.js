@@ -15,8 +15,8 @@ module.exports = {
     if (!App && !Rares) throw new Error('Expected either App or Rares to be in the plugin options');
 
     async function mount(App) {
-      if (App.server) throw new Error('This app is already mounted');
-      App.server = server;
+      if (App.$mounted) throw new Error('This app is already mounted');
+      App.$mounted = true;
 
       await server.register(_.compact([
         App.secrets && {
