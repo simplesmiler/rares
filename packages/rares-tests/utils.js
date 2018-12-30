@@ -4,12 +4,12 @@ const getPort = require('get-port');
 const axios = require('axios');
 const tough = require('tough-cookie');
 const { default: axiosCookieJarSupport } = require('axios-cookiejar-support');
-const Hapi = require('hapi');
-const Rares = require('..');
-const HapiRares = require('../packages/hapi-rares');
+const Rares = require('rares');
+const HapiRaresServer = require('hapi-rares/server');
 
 module.exports = {
   makeFixture,
+  backends: ['hapi'],
 };
 
 // === //
@@ -19,34 +19,34 @@ axiosCookieJarSupport(axios);
 async function makeFixture(name, options) {
   const dir = path.resolve(__dirname, 'fixtures', name);
   options = _.defaultsDeep(null, options, { Rares, dir, whiny: false });
-  const hapi = await makeHapiServer(options);
-  const axios = await makeAxiosClient(hapi.info.uri);
+
+  const backend = _.get(options, 'backend');
+  if (backend == null) {
+    throw new Error('Test should specify backend');
+  }
+
+  let Backend;
+  if (backend === 'hapi') {
+    Backend = HapiRaresServer;
+  }
+  else {
+    throw new Error(`Unexpected situation, backend = ${backend}`);
+  }
+
+  const port = await getPort();
+  const server = await Backend(null, Rares, { port, ...options });
+  await server.start();
+
+  const axios = await makeAxiosClient(server.uri);
   const fixture = {
-    hapi, axios,
-    async stop() {
-      await hapi.stop({ timeout: 10000 });
-      fixture.hapi = null;
+    axios,
+    async cleanup() {
+      await server.cleanup();
       fixture.axios = null;
-      fixture.stop = null;
+      fixture.cleanup = null;
     },
   };
   return fixture;
-}
-
-async function makeHapiServer(options) {
-  const server = new Hapi.Server({
-    host: 'localhost',
-    port: await getPort(),
-  });
-
-  await server.register({
-    plugin: HapiRares,
-    options,
-  });
-
-  await server.start();
-
-  return server;
 }
 
 const mixin = {};
