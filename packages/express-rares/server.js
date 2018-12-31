@@ -1,5 +1,6 @@
 const _ = require('lodash');
 const Express = require('express');
+const stoppable = require('stoppable');
 const ExpressRares = require('.');
 
 module.exports = async (App, Rares, opts) => {
@@ -25,11 +26,12 @@ module.exports = async (App, Rares, opts) => {
             resolve();
           }
         });
+        expressServer = stoppable(expressServer, 5000);
       });
     },
     async stop() {
       return new Promise((resolve, reject) => {
-        expressServer.close((err, result) => {
+        expressServer.stop((err, result) => {
           if (err) {
             reject(err);
           }
