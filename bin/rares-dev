@@ -1,21 +1,28 @@
 #!/usr/bin/env node
 
 module.exports = async function(argv) {
-  const Rares = require('..');
-
   const backend = argv.server || 'hapi';
-  let server = null;
+  let Backend;
   if (backend === 'hapi') {
-    server = await require('hapi-rares/server')(null, Rares);
+    Backend = require('hapi-rares/server');
   }
   else if (backend === 'express') {
-    server = await require('express-rares/server')(null, Rares);
+    Backend = require('express-rares/server');
   }
   else {
     throw new Error(`Unsupported server ${backend}`);
   }
 
+  console.log('Loading the application...');
+  const dir = argv.dir;
+  const Rares = require('..');
+  const App = await Rares.create({ dir });
+  console.log('Application has loaded');
+
   console.log(`Starting the server...`);
+  const host = argv.host || process.env.HOST || 'localhost';
+  const port = argv.port || process.env.PORT || 3000;
+  const server = await Backend(App, { host, port });
   await server.start();
   console.log(`Server running at: ${server.uri}`);
 

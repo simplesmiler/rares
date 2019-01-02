@@ -19,7 +19,7 @@ axiosCookieJarSupport(axios);
 
 async function makeFixture(name, options) {
   const dir = path.resolve(__dirname, 'fixtures', name);
-  options = _.defaultsDeep(null, options, { Rares, dir, whiny: false });
+  options = _.defaultsDeep(null, options, { dir, whiny: false });
 
   const backend = _.get(options, 'backend');
   if (backend == null) {
@@ -38,7 +38,8 @@ async function makeFixture(name, options) {
   }
 
   const port = await getPort();
-  const server = await Backend(null, Rares, { port, ...options });
+  let App = await Rares.create(options);
+  let server = await Backend(App, { port });
   await server.start();
 
   const axios = await makeAxiosClient(server.uri);
@@ -46,6 +47,9 @@ async function makeFixture(name, options) {
     axios,
     async cleanup() {
       await server.cleanup();
+      server = null;
+      await App.$destroy();
+      App = null;
       fixture.axios = null;
       fixture.cleanup = null;
     },

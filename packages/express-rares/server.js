@@ -3,14 +3,14 @@ const Express = require('express');
 const stoppable = require('stoppable');
 const ExpressRares = require('.');
 
-module.exports = async (App, Rares, opts) => {
-  const host = _.get(opts, 'host') || process.env.HOST || 'localhost';
-  const port = _.get(opts, 'port') || process.env.PORT || 3000;
+module.exports = async (App, opts) => {
+  const host = _.get(opts, 'host') || 'localhost';
+  const port = _.get(opts, 'port') || 3000;
   opts = _.omit(opts, ['host', 'port']);
 
   let expressApp = Express();
 
-  expressApp.use(await ExpressRares({ App, Rares, ...opts }));
+  expressApp.use(await ExpressRares({ App }));
   let expressServer = null;
 
   const server = {

@@ -7,35 +7,21 @@ const BodyParser = require('body-parser');
 const registerRoutes = require('./register-routes');
 
 module.exports = async function ExpressRares(opts) {
-  const { App, Rares } = opts;
-  opts = _.omit(opts, ['App', 'Rares']);
+  const App = _.get(opts, 'App', null);
+  opts = _.omit(opts, ['App']);
 
-  if (!App && !Rares) throw new Error('Expected either App or Rares to be in the plugin options');
+  if (!App) throw new Error('Expected App to be in the plugin options');
 
   const expressRouter = Router();
 
-  async function mount(App) {
-    if (App.$mounted) throw new Error('This app is already mounted');
-    App.$mounted = true;
+  expressRouter.use(BodyParser.json());
+  expressRouter.use(BodyParser.urlencoded({ extended: true }));
 
-    expressRouter.use(BodyParser.json());
-    expressRouter.use(BodyParser.urlencoded({ extended: true }));
-
-    if (App.secrets) {
-      expressRouter.use(require('cookie-session')({ secret: App.secrets.secretKeyBase }));
-    }
-
-    await registerRoutes(expressRouter, App);
+  if (App.secrets) {
+    expressRouter.use(require('cookie-session')({ secret: App.secrets.secretKeyBase }));
   }
 
-  if (App) {
-    await mount(App);
-  }
-  else {
-    await Rares.create(opts, async App => {
-      await mount(App);
-    });
-  }
+  await registerRoutes(expressRouter, App);
 
   return expressRouter;
 };
