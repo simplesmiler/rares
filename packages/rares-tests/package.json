@@ -1,32 +1,13 @@
 {
   "name": "rares-tests",
-  "version": "0.1.0",
+  "private": true,
   "description": "Tests for rares framework",
-  "main": "index.js",
   "scripts": {
     "test": "npm run test:e2e",
     "test:e2e": "jest -c jest.config.json e2e"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/simplesmiler/rares.git"
-  },
-  "keywords": [
-    "rares",
-    "modern",
-    "api",
-    "backend",
-    "framework",
-    "rails",
-    "hapi",
-    "express"
-  ],
   "author": "Denis Karabaza <denis.karabaza@gmail.com>",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/simplesmiler/rares/issues"
-  },
-  "homepage": "https://github.com/simplesmiler/rares#readme",
   "dependencies": {
     "axios": "^0.18.0",
     "axios-cookiejar-support": "^0.4.1",
