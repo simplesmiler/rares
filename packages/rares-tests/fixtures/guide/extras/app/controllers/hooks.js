@@ -4,7 +4,7 @@ module.exports = (App, Rares) => {
     static $setup() {
       this.$aroundAction('aroundAction', { only: 'around' });
       this.$beforeAction('beforeAction', { only: 'before' });
-      // this.$afterAction('afterAction', { only: 'after' }); // @FIXME(v0.4): this test is currently broken, figure out if it should work or not
+      this.$afterAction('afterAction', { only: 'after' });
       this.$rescueFrom('rescueFrom', { only: 'rescue' });
     }
 
@@ -42,16 +42,16 @@ module.exports = (App, Rares) => {
       this.from = 'hooks#beforeAction';
     }
 
-    // async after() {
-    //   return { from: 'hooks#after' };
-    // }
-    //
-    // async afterAction(response) {
-    //   return {
-    //     original: response,
-    //     modified: { from: 'hooks#afterAction' },
-    //   };
-    // }
+    async after() {
+      return { from: 'hooks#after' };
+    }
+
+    // @NOTE: Because afterAction hooks can not modify the response, the return from this function will be silently ignored
+    async afterAction() {
+      return {
+        from: 'hooks#afterAction',
+      };
+    }
 
     async rescue() {
       throw new Error('from: hooks#rescue');

@@ -13,9 +13,8 @@
   "scripts": {
     "docs:dev": "vuepress dev docs",
     "docs:build": "vuepress build docs",
-    "lint": "eslint . bin/**",
-    "test": "npm run lint && npm audit && npm run test:e2e",
-    "test:e2e": "jest test/e2e"
+    "lint": "eslint . bin/** --ignore-path .gitignore",
+    "test": "npm run lint && npm audit && npm --prefix=packages/rares-tests run test"
   },
   "repository": {
     "type": "git",
@@ -37,9 +36,9 @@
     "boom": "^7.2.0",
     "find-file-up": "^2.0.1",
     "get-prototype-chain": "^1.0.1",
-    "hapi-rares": "^0.1.0",
     "inflect": "^0.4.0",
     "lodash": "^4.17.10",
+    "minimist": "^1.2.0",
     "pg": "^7.4.3",
     "sequelize": "^4.37.10",
     "umzug": "^2.1.0",
@@ -50,15 +49,9 @@
   },
   "homepage": "https://github.com/simplesmiler/rares#readme",
   "devDependencies": {
-    "axios": "^0.18.0",
-    "axios-cookiejar-support": "^0.4.1",
     "eslint": "^5.4.0",
     "eslint-config-node": "^3.0.0",
     "eslint-plugin-jest": "^21.21.0",
-    "get-port": "^4.0.0",
-    "hapi": "^17.5.1",
-    "jest": "^23.5.0",
-    "tough-cookie": "^2.4.3",
     "vuepress": "^0.14.2"
   }
 }

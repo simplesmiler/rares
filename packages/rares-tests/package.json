@@ -1,10 +1,11 @@
 {
-  "name": "express-rares",
-  "version": "0.0.1",
-  "description": "Rares bindings for Express",
+  "name": "rares-tests",
+  "version": "0.1.0",
+  "description": "Tests for rares framework",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npm run test:e2e",
+    "test:e2e": "jest -c jest.config.json e2e"
   },
   "repository": {
     "type": "git",
@@ -17,6 +18,7 @@
     "backend",
     "framework",
     "rails",
+    "hapi",
     "express"
   ],
   "author": "Denis Karabaza <denis.karabaza@gmail.com>",
@@ -26,13 +28,16 @@
   },
   "homepage": "https://github.com/simplesmiler/rares#readme",
   "dependencies": {
-    "body-parser": "^1.18.3",
-    "boom": "^7.3.0",
-    "cookie-session": "^2.0.0-beta.3",
+    "axios": "^0.18.0",
+    "axios-cookiejar-support": "^0.4.1",
     "express": "^4.16.4",
-    "lodash": "^4.17.10",
-    "qs": "^6.6.0",
-    "sequelize": "^4.42.0",
-    "stoppable": "^1.1.0"
+    "express-rares": "file:../express-rares",
+    "get-port": "^4.0.0",
+    "hapi": "^17.8.1",
+    "hapi-rares": "file:../hapi-rares",
+    "jest": "^23.5.0",
+    "lodash": "^4.17.11",
+    "rares": "file:../..",
+    "tough-cookie": "^2.4.3"
   }
 }

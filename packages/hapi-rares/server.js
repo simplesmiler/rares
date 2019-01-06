@@ -1,30 +1,35 @@
+const _ = require('lodash');
 const Hapi = require('hapi');
-const HapiTales = require('.');
+const HapiRares = require('.');
 
-module.exports = async function(App, Rares) {
-  let hapi = new Hapi.Server({
-    host: process.env.HOST || 'localhost',
-    port: process.env.PORT || 3000,
-  });
+module.exports = async (App, opts) => {
+  const host = _.get(opts, 'host') || 'localhost';
+  const port = _.get(opts, 'port') || 3000;
+  opts = _.omit(opts, ['host', 'port']);
 
-  await hapi.register({
-    plugin: HapiTales,
-    options: { App, Rares },
+  let hapiServer = new Hapi.Server({ host, port });
+
+  await hapiServer.register({
+    plugin: HapiRares,
+    options: { App },
   });
 
   const server = {
     uri: null,
     async start() {
-      await hapi.start();
-      server.uri = hapi.info.uri;
+      await hapiServer.start();
+      server.uri = `http://${host}${port === 80 ? '' : ':' + port}`;
     },
     async stop() {
-      await hapi.stop({ timeout: 10000 });
+      await hapiServer.stop({ timeout: 5000 });
       server.uri = null;
     },
     async cleanup() {
       if (server.uri) await server.stop();
-      hapi = null;
+      hapiServer = null;
+      server.start = null;
+      server.stop = null;
+      server.cleanup = null;
     },
   };
 

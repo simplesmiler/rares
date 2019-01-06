@@ -1,9 +1,20 @@
 #!/usr/bin/env node
 
+const minimist = require('minimist');
+
 async function main() {
   const commands = ['dev', 'console'];
   const command = process.argv[2];
   const args = process.argv.slice(3);
+  const argv = minimist(args, {
+    string: ['dir', 'server', 'host', 'port'],
+    alias: {
+      dir: ['d'],
+      server: ['s'],
+      host: ['h'],
+      port: ['p'],
+    },
+  });
 
   if (!command || !commands.includes(command)) {
     // @TODO: display usage
@@ -11,7 +22,7 @@ async function main() {
     return false;
   }
 
-  return await require('./rares-' + command)(args);
+  return await require('./rares-' + command)(argv);
 }
 
 /* eslint-disable no-process-exit */
