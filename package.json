@@ -1,57 +1,18 @@
 {
-  "name": "rares",
-  "version": "0.1.2",
-  "description": "Modern backend framework, inspired by Ruby on Rails",
-  "main": "lib/index.js",
-  "bin": {
-    "rares": "bin/rares"
-  },
-  "files": [
-    "lib",
-    "bin"
-  ],
-  "scripts": {
-    "docs:dev": "vuepress dev docs",
-    "docs:build": "vuepress build docs",
-    "lint": "eslint . bin/** --ignore-path .gitignore",
-    "test": "npm run lint && npm audit && npm --prefix=packages/rares-tests run test"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/simplesmiler/rares.git"
-  },
-  "keywords": [
-    "rares",
-    "modern",
-    "api",
-    "backend",
-    "framework",
-    "rails",
-    "hapi",
-    "express"
-  ],
+  "private": true,
   "author": "Denis Karabaza <denis.karabaza@gmail.com>",
   "license": "ISC",
-  "dependencies": {
-    "boom": "^7.2.0",
-    "find-file-up": "^2.0.1",
-    "get-prototype-chain": "^1.0.1",
-    "inflect": "^0.4.0",
-    "lodash": "^4.17.10",
-    "minimist": "^1.2.0",
-    "pg": "^7.4.3",
-    "sequelize": "^4.37.10",
-    "umzug": "^2.1.0",
-    "watchpack": "^1.6.0"
+  "scripts": {
+    "bootstrap": "lerna bootstrap --force-local",
+    "lint": "eslint packages packages/*/bin/** --ignore-path .gitignore",
+    "test": "lerna run --stream test",
+    "docs:dev": "lerna run --stream --scope rares-docs dev",
+    "docs:build": "lerna run --stream --scope rares-docs build"
   },
-  "bugs": {
-    "url": "https://github.com/simplesmiler/rares/issues"
-  },
-  "homepage": "https://github.com/simplesmiler/rares#readme",
   "devDependencies": {
     "eslint": "^5.4.0",
     "eslint-config-node": "^3.0.0",
     "eslint-plugin-jest": "^21.21.0",
-    "vuepress": "^0.14.2"
+    "lerna": "^3.8.5"
   }
 }

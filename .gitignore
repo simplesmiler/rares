@@ -1,9 +1,7 @@
 # Dev
 node_modules
 package-lock.json
+lerna-debug.log
 
 # IDEA
 .idea
-
-# Build
-/docs/.vuepress/dist

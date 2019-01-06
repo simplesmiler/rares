@@ -1,0 +1,14 @@
+{
+  "name": "rares-docs",
+  "private": true,
+  "description": "Docs for rares framework",
+  "scripts": {
+    "dev": "vuepress dev docs",
+    "build": "vuepress build docs"
+  },
+  "author": "Denis Karabaza <denis.karabaza@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "vuepress": "^0.14.2"
+  }
+}
