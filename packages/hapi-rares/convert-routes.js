@@ -136,6 +136,7 @@ function decode(str) {
   }
 }
 
+// @TODO: Make more robust converter
 function convertPath(path) {
   // @NOTE: Collect participating params
   const keys = [];
