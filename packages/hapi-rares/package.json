@@ -22,9 +22,11 @@
     "url": "https://github.com/simplesmiler/rares/issues"
   },
   "homepage": "https://github.com/simplesmiler/rares#readme",
+  "peerDependencies": {
+    "hapi": "^17.5.3"
+  },
   "dependencies": {
     "boom": "^7.2.0",
-    "hapi": "^17.5.3",
     "lodash": "^4.17.10",
     "path-to-regexp": "^2.4.0",
     "qs": "^6.5.2",

@@ -22,11 +22,13 @@
     "url": "https://github.com/simplesmiler/rares/issues"
   },
   "homepage": "https://github.com/simplesmiler/rares#readme",
+  "peerDependencies": {
+    "express": "^4.16.4"
+  },
   "dependencies": {
     "body-parser": "^1.18.3",
     "boom": "^7.3.0",
     "cookie-session": "^2.0.0-beta.3",
-    "express": "^4.16.4",
     "lodash": "^4.17.10",
     "qs": "^6.6.0",
     "sequelize": "^4.42.0",
