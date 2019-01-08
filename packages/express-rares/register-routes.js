@@ -1,9 +1,6 @@
 const _ = require('lodash');
 const qs = require('qs');
 
-const Sequelize = require('sequelize');
-const Boom = require('boom');
-
 module.exports = function register(expressRouter, App) {
   const Rares = App.constructor;
 
@@ -82,35 +79,6 @@ module.exports = function register(expressRouter, App) {
 
           res.send(response);
           res.end();
-        })
-        .catch(async err => {
-          // @NOTE: keep explicit http errors as is
-          if (Boom.isBoom(err)) {
-            throw err;
-          }
-
-          // @NOTE: map database errors to http errors
-          // @NOTE: it's important to catch specific errors first, and then generic,
-          //        otherwise generic errors will "shadow" specific ones
-          else if (err instanceof Sequelize.EmptyResultError) {
-            throw Boom.boomify(err, { statusCode: 404 });
-          }
-          else if (err instanceof Sequelize.ValidationError) {
-            const newErr = Boom.boomify(err, { statusCode: 422 });
-            newErr.output.payload.errors = _.map(newErr.errors, _.partialRight(_.pick, ['message', 'type', 'path']));
-            throw newErr;
-          }
-          else if (err instanceof Sequelize.ForeignKeyConstraintError) {
-            throw Boom.boomify(err, { statusCode: 409 });
-          }
-          else if (err instanceof Sequelize.TimeoutError) {
-            throw Boom.boomify(err, { statusCode: 424 });
-          }
-
-          // @NOTE: errors that were not rescued are bad implementation
-          else {
-            throw Boom.badImplementation(err);
-          }
         })
         .catch(err => {
           next(err);

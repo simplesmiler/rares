@@ -12,20 +12,21 @@ for (const backend of backends) {
       await fixture.cleanup();
     });
 
-    test('Says 200 to the index', async () => {
+    test('Says 200 with JSON body to the index', async () => {
       expect.assertions(2);
       const response = await fixture.axios.get('/');
       expect(response.status).toBe(200);
       expect(response.data).toEqual({ message: 'hello' });
     });
 
-    test('Says 404 to not existing resources', async () => {
-      expect.assertions(1);
+    test('Says 404 with JSON body to not existing resources', async () => {
+      expect.assertions(2);
       try {
         await fixture.axios.get('/no-such-resource');
       }
       catch (err) {
         expect(err.response.status).toBe(404);
+        expect(err.response.data).toEqual({ statusCode: 404, error: 'Not Found', message: 'Not Found' });
       }
     });
 

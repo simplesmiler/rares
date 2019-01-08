@@ -8,6 +8,7 @@ const registerRoutes = require('./register-routes');
 
 module.exports = async function ExpressRares(opts) {
   const App = _.get(opts, 'App', null);
+  const Rares = App.constructor;
   opts = _.omit(opts, ['App']);
 
   if (!App) throw new Error('Expected App to be in the plugin options');
@@ -23,5 +24,26 @@ module.exports = async function ExpressRares(opts) {
 
   await registerRoutes(expressRouter, App);
 
-  return expressRouter;
+  return function(req, res, next) {
+    return expressRouter(req, res, err => {
+      try {
+        // @NOTE: In case of a missing route, we handle it here instead of delegating back to express
+        if (!err) err = Rares.Boom.notFound();
+
+        // @NOTE: Make sure all errors are wrapped
+        err = App.$wrapError(err);
+
+        // @NOTE: Unwrapping boom error for express
+        res.status(err.output.statusCode);
+        res.set(err.output.headers);
+        res.type('application/json');
+        res.send(JSON.stringify(err.output.payload));
+        res.end();
+      }
+      catch (err2) {
+        // @NOTE: Safety net, we should never actually land here, unless something goes horribly wrong
+        next(err2);
+      }
+    });
+  };
 };

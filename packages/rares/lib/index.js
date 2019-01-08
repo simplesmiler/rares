@@ -2,12 +2,17 @@ const findFileUp = require('find-file-up');
 const path = require('path');
 const _ = require('lodash');
 const Sequelize = require('sequelize');
+const Boom = require('boom');
 const Watchpack = require('watchpack');
 
 module.exports = class Rares {
 
   static get Sequelize() {
     return Sequelize;
+  }
+
+  static get Boom() {
+    return Boom;
   }
 
   static get Controller() {
@@ -278,6 +283,36 @@ module.exports = class Rares {
     }
 
     this.$destroyed = true;
+  }
+
+  $wrapError(err) {
+    // @NOTE: Keep explicit http errors as is
+    if (Boom.isBoom(err)) {
+      return err;
+    }
+
+    // @NOTE: Map database errors to http errors
+    // @NOTE: It's important to catch specific errors before generic ones,
+    //        otherwise generic errors will "shadow" specific ones
+    else if (err instanceof Sequelize.EmptyResultError) {
+      return Boom.boomify(err, { statusCode: 404 });
+    }
+    else if (err instanceof Sequelize.ValidationError) {
+      const newErr = Boom.boomify(err, { statusCode: 422 });
+      newErr.output.payload.errors = _.map(newErr.errors, _.partialRight(_.pick, ['message', 'type', 'path']));
+      return newErr;
+    }
+    else if (err instanceof Sequelize.ForeignKeyConstraintError) {
+      return Boom.boomify(err, { statusCode: 409 });
+    }
+    else if (err instanceof Sequelize.TimeoutError) {
+      return Boom.boomify(err, { statusCode: 424 });
+    }
+
+    // @NOTE: Other errors that were not rescued are bad implementation
+    else {
+      return Boom.badImplementation(err);
+    }
   }
 
 };
