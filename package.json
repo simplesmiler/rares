@@ -4,9 +4,11 @@
   "license": "ISC",
   "scripts": {
     "bootstrap": "lerna bootstrap --force-local",
+    "clean": "lerna clean",
     "publish": "lerna publish",
     "lint": "eslint packages packages/*/bin/** --ignore-path .gitignore",
     "test": "cross-env NODE_PATH=./node_modules lerna run --stream test",
+    "dev": "cross-env NODE_PATH=./node_modules lerna run --stream --scope rares-sandbox dev",
     "docs:dev": "lerna run --stream --scope rares-docs dev",
     "docs:build": "lerna run --stream --scope rares-docs build"
   },

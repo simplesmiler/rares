@@ -1,0 +1,22 @@
+{
+  "name": "rares-sandbox",
+  "private": true,
+  "description": "Sandbox for rares framework",
+  "scripts": {
+    "dev": "rares dev -s hapi"
+  },
+  "author": "Denis Karabaza <denis.karabaza@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "cross-env": "^5.2.0",
+    "express": "^4.16.4",
+    "express-rares": "^0.2.0-alpha.0",
+    "hapi": "^17.8.1",
+    "hapi-rares": "^0.2.0-alpha.0",
+    "rares": "^0.2.0-alpha.0",
+    "pg": "^7.4.3",
+    "sequelize": "^4.42.0",
+    "umzug": "^2.1.0",
+    "sqlite3": "^4.0.6"
+  }
+}
