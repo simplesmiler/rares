@@ -33,9 +33,6 @@
     "inflect": "^0.4.0",
     "lodash": "^4.17.10",
     "minimist": "^1.2.0",
-    "pg": "^7.4.3",
-    "sequelize": "^4.37.10",
-    "umzug": "^2.1.0",
     "watchpack": "^1.6.0"
   },
   "bugs": {

@@ -8,6 +8,7 @@ module.exports = async function(App, Rares) {
   const dir = App.config.dir;
 
   // == @SECTION: check migrations == //
+
   const migrationsDir = path.resolve(dir, 'db/migrate');
   let pending = [];
 

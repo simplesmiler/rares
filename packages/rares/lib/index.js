@@ -1,14 +1,17 @@
 const findFileUp = require('find-file-up');
 const path = require('path');
 const _ = require('lodash');
-const Sequelize = require('sequelize');
 const Boom = require('boom');
 const Watchpack = require('watchpack');
+
+function getSequielize() {
+  return require('sequelize');
+}
 
 module.exports = class Rares {
 
   static get Sequelize() {
-    return Sequelize;
+    return getSequielize();
   }
 
   static get Boom() {
@@ -135,7 +138,7 @@ module.exports = class Rares {
         }
       }
       catch (err) {
-        throw new Error(`Failed to require config/database.js file, continuing without it: ${err.message}`);
+        throw new Error(`Failed to require config/database.js file: ${err.message}`);
       }
 
       if (database) {
@@ -255,7 +258,8 @@ module.exports = class Rares {
     // == @SECTION: setup models == //
 
     // @NOTE: for sequelize, we depend on the database config, and want to init and associate models before starting
-    if (this.database) {
+    if (this.config.features.database && this.database) {
+      const Sequelize = getSequielize();
       this.sequelize = new Sequelize(this.database);
       this.$destroyCallbacks.push(async () => {
         await this.sequelize.close();
@@ -291,28 +295,30 @@ module.exports = class Rares {
       return err;
     }
 
-    // @NOTE: Map database errors to http errors
-    // @NOTE: It's important to catch specific errors before generic ones,
-    //        otherwise generic errors will "shadow" specific ones
-    else if (err instanceof Sequelize.EmptyResultError) {
-      return Boom.boomify(err, { statusCode: 404 });
-    }
-    else if (err instanceof Sequelize.ValidationError) {
-      const newErr = Boom.boomify(err, { statusCode: 422 });
-      newErr.output.payload.errors = _.map(newErr.errors, _.partialRight(_.pick, ['message', 'type', 'path']));
-      return newErr;
-    }
-    else if (err instanceof Sequelize.ForeignKeyConstraintError) {
-      return Boom.boomify(err, { statusCode: 409 });
-    }
-    else if (err instanceof Sequelize.TimeoutError) {
-      return Boom.boomify(err, { statusCode: 424 });
+    if (this.config.features.database) {
+      const Sequelize = getSequielize();
+
+      // @NOTE: Map database errors to http errors
+      // @NOTE: It's important to catch specific errors before generic ones,
+      //        otherwise generic errors will "shadow" specific ones
+      if (err instanceof Sequelize.EmptyResultError) {
+        return Boom.boomify(err, { statusCode: 404 });
+      }
+      if (err instanceof Sequelize.ValidationError) {
+        const newErr = Boom.boomify(err, { statusCode: 422 });
+        newErr.output.payload.errors = _.map(newErr.errors, _.partialRight(_.pick, ['message', 'type', 'path']));
+        return newErr;
+      }
+      if (err instanceof Sequelize.ForeignKeyConstraintError) {
+        return Boom.boomify(err, { statusCode: 409 });
+      }
+      if (err instanceof Sequelize.TimeoutError) {
+        return Boom.boomify(err, { statusCode: 424 });
+      }
     }
 
     // @NOTE: Other errors that were not rescued are bad implementation
-    else {
-      return Boom.badImplementation(err);
-    }
+    return Boom.badImplementation(err);
   }
 
 };
