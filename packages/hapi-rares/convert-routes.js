@@ -6,22 +6,27 @@ module.exports = function convert(server, App) {
   const Rares = App.constructor;
 
   if (App.secrets) {
-    App.Controller.prototype.$store = async function(key, value) {
-      this.$request.yar.set(key, value);
-    };
-
-    App.Controller.prototype.$load = async function(key) {
-      return this.$request.yar.get(key);
-    };
-
-    App.Controller.prototype.$clear = async function(key) {
-      this.$request.yar.clear(key);
-    };
+    App.Controller.$extend({
+      async $store(key, value) {
+        this.$request.yar.set(key, value);
+      },
+      async $load(key) {
+        return this.$request.yar.get(key);
+      },
+      async $clear(key) {
+        this.$request.yar.clear(key);
+      },
+    });
   }
   else {
-    App.Controller.prototype.$store = App.Controller.prototype.$load = App.Controller.prototype.$clear = async function() {
+    const $error = async function() {
       throw new Error(`If you want to use sessions make sure to enable secrets`);
     };
+    App.Controller.$extend({
+      $store: $error,
+      $load: $error,
+      $clear: $error,
+    });
   }
 
   const routes = [];

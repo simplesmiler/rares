@@ -3,26 +3,31 @@ const qs = require('qs');
 
 module.exports = function register(expressRouter, App) {
   if (App.secrets) {
-    App.Controller.prototype.$store = async function(key, value) {
-      this.$request.session[key] = value;
-    };
-
-    App.Controller.prototype.$load = async function(key) {
-      let value = this.$request.session[key];
-      if (value === undefined) {
-        value = null;
-      }
-      return value;
-    };
-
-    App.Controller.prototype.$clear = async function(key) {
-      delete this.$request.session[key];
-    };
+    App.Controller.$extend({
+      async $store(key, value) {
+        this.$request.session[key] = value;
+      },
+      async $load(key) {
+        let value = this.$request.session[key];
+        if (value === undefined) {
+          value = null;
+        }
+        return value;
+      },
+      async $clear(key) {
+        delete this.$request.session[key];
+      },
+    });
   }
   else {
-    App.Controller.prototype.$store = App.Controller.prototype.$load = App.Controller.prototype.$clear = async function() {
+    const $error = async function() {
       throw new Error(`If you want to use sessions make sure to enable secrets`);
     };
+    App.Controller.$extend({
+      $store: $error,
+      $load: $error,
+      $clear: $error,
+    });
   }
 
   App.Router.$walk(App.routes, entry => {
