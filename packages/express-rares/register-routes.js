@@ -2,14 +2,12 @@ const _ = require('lodash');
 const qs = require('qs');
 
 module.exports = function register(expressRouter, App) {
-  const Rares = App.constructor;
-
   if (App.secrets) {
-    Rares.Controller.prototype.$store = async function(key, value) {
+    App.Controller.prototype.$store = async function(key, value) {
       this.$request.session[key] = value;
     };
 
-    Rares.Controller.prototype.$load = async function(key) {
+    App.Controller.prototype.$load = async function(key) {
       let value = this.$request.session[key];
       if (value === undefined) {
         value = null;
@@ -17,17 +15,17 @@ module.exports = function register(expressRouter, App) {
       return value;
     };
 
-    Rares.Controller.prototype.$clear = async function(key) {
+    App.Controller.prototype.$clear = async function(key) {
       delete this.$request.session[key];
     };
   }
   else {
-    Rares.Controller.prototype.$store = Rares.Controller.prototype.$load = Rares.Controller.prototype.$clear = async function() {
+    App.Controller.prototype.$store = App.Controller.prototype.$load = App.Controller.prototype.$clear = async function() {
       throw new Error(`If you want to use sessions make sure to enable secrets`);
     };
   }
 
-  Rares.Router.$walk(App.routes, entry => {
+  App.Router.$walk(App.routes, entry => {
     const { controller: controllerName, action: actionName, model: modelName, path, method } = entry;
 
     // @TODO: In build/start mode load the class here
@@ -44,7 +42,6 @@ module.exports = function register(expressRouter, App) {
 
       const controller = new ControllerClass({
         // @NOTE: generic application stuff
-        $rares: Rares,
         $app: App,
 
         // @NOTE: express-specific request stuff

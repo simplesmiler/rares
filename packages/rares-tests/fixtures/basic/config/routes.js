@@ -1,5 +1,5 @@
-module.exports = (App, Rares) => {
-  const { get, resource } = Rares.Router;
+module.exports = App => {
+  const { get, resource } = App.Router;
   return [
     get('/', { controller: 'index', action: 'index' }),
     resource('memory', { only: ['show', 'update'] }),

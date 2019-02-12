@@ -22,8 +22,8 @@ Simple app:
 
 ```js
 // config/routes.js
-module.exports = (App, Rares) => {
-  const { resource } = Rares.Router;
+module.exports = App => {
+  const { resource } = App.Router;
   return [
     resource('memory', { only: ['show', 'update'] }), 
   ];
@@ -32,10 +32,10 @@ module.exports = (App, Rares) => {
 
 ```js
 // app/controllers/memory.js
-module.exports = (App, Rares) => {
+module.exports = App => {
   let value = null; // @NOTE: in the real world you would have a data store
 
-  return class MemoryController extends Rares.Controller {
+  return class MemoryController extends App.Controller {
 
     async show() {
       return { value };

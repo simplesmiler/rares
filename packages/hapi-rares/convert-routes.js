@@ -6,27 +6,27 @@ module.exports = function convert(server, App) {
   const Rares = App.constructor;
 
   if (App.secrets) {
-    Rares.Controller.prototype.$store = async function(key, value) {
+    App.Controller.prototype.$store = async function(key, value) {
       this.$request.yar.set(key, value);
     };
 
-    Rares.Controller.prototype.$load = async function(key) {
+    App.Controller.prototype.$load = async function(key) {
       return this.$request.yar.get(key);
     };
 
-    Rares.Controller.prototype.$clear = async function(key) {
+    App.Controller.prototype.$clear = async function(key) {
       this.$request.yar.clear(key);
     };
   }
   else {
-    Rares.Controller.prototype.$store = Rares.Controller.prototype.$load = Rares.Controller.prototype.$clear = async function() {
+    App.Controller.prototype.$store = App.Controller.prototype.$load = App.Controller.prototype.$clear = async function() {
       throw new Error(`If you want to use sessions make sure to enable secrets`);
     };
   }
 
   const routes = [];
 
-  Rares.Router.$walk(App.routes, entry => {
+  App.Router.$walk(App.routes, entry => {
     const { controller: controllerName, action: actionName, model: modelName, path, method } = entry;
 
     // @NOTE: Hapi uses different syntax for paths, so we have to convert
@@ -49,7 +49,6 @@ module.exports = function convert(server, App) {
 
         const controller = new ControllerClass({
           // @NOTE: generic application stuff
-          $rares: Rares,
           $app: App,
 
           // @NOTE: hapi-specific request stuff

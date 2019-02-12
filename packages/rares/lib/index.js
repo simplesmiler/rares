@@ -10,23 +10,23 @@ function getSequielize() {
 
 module.exports = class Rares {
 
-  static get Sequelize() {
+  get Sequelize() {
     return getSequielize();
   }
 
-  static get Boom() {
+  get Boom() {
     return Boom;
   }
 
-  static get Controller() {
+  get Controller() {
     return require('./controller');
   }
 
-  static get Ability() {
+  get Ability() {
     return require('./ability');
   }
 
-  static get Router() {
+  get Router() {
     return require('./router');
   }
 
@@ -68,7 +68,7 @@ module.exports = class Rares {
       const configPath = await findFileUp('rares.config.js', cwd);
       config = require(configPath);
       if (_.isFunction(config)) {
-        config = await config(this, Rares);
+        config = await config(this);
       }
       configDir = path.dirname(configPath);
     }
@@ -102,7 +102,7 @@ module.exports = class Rares {
       try {
         secrets = require(path.resolve(this.config.dir, 'config/secrets'));
         if (_.isFunction(secrets)) {
-          secrets = await secrets(this, Rares);
+          secrets = await secrets(this);
         }
       }
       catch (err) {
@@ -134,7 +134,7 @@ module.exports = class Rares {
       try {
         database = require(path.resolve(this.config.dir, 'config/database'));
         if (_.isFunction(database)) {
-          database = await database(this, Rares);
+          database = await database(this);
         }
       }
       catch (err) {
@@ -155,7 +155,7 @@ module.exports = class Rares {
     if (this.config.features.bootstrap) {
       try {
         // @NOTE: meaningless to have a non-function variant
-        await require(path.resolve(this.config.dir, 'config/application'))(this, Rares);
+        await require(path.resolve(this.config.dir, 'config/application'))(this);
       }
       catch (err) {
         if (this.config.whiny) {
@@ -169,7 +169,7 @@ module.exports = class Rares {
     if (this.config.features.bootstrap) {
       try {
         // @NOTE: meaningless to have a non-function variant
-        await require(path.resolve(this.config.dir, 'config/environments', this.env))(this, Rares);
+        await require(path.resolve(this.config.dir, 'config/environments', this.env))(this);
       }
       catch (err) {
         if (this.config.whiny) {
@@ -202,7 +202,7 @@ module.exports = class Rares {
       // @NOTE: Setup for tracking dependencies, and load the module
       loaderStack.push(filePath);
       loaderDeps[filePath] = [];
-      loaded = require(filePath)(this, Rares); // @NOTE: For now, modules do not support async and direct export variants
+      loaded = require(filePath)(this); // @NOTE: For now, modules do not support async and direct export variants
       loaderStack.shift();
 
       // @NOTE: Enhance controllers
@@ -215,7 +215,7 @@ module.exports = class Rares {
           throw new Error(`Controller '${controllerName}' seems to export async value, which is not supported for modules`);
         }
         if (loaded.$doSetup == null) {
-          throw new Error(`Controller '${controllerName}' does not seem to extend Rares.Controller`);
+          throw new Error(`Controller '${controllerName}' does not seem to extend App.Controller`);
         }
         loaded.$doSetup();
       }
@@ -265,14 +265,14 @@ module.exports = class Rares {
       this.$destroyCallbacks.push(async () => {
         await this.sequelize.close();
       });
-      await require('./sequelize')(this, Rares);
+      await require('./sequelize')(this);
     }
 
     // == @SECTION: routes == //
 
     try {
       // @TODO: support json and non-function variant
-      this.routes = await require(path.resolve(this.config.dir, 'config/routes'))(this, Rares);
+      this.routes = await require(path.resolve(this.config.dir, 'config/routes'))(this);
     }
     catch (err) {
       throw new Error(`Failed to require config/routes.js file: ${err.message}`);

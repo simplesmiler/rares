@@ -1,6 +1,6 @@
-module.exports = (App, Rares) => {
+module.exports = App => {
 
-  return class extends Rares.Controller {
+  return class extends App.Controller {
     static $setup() {
       this.$aroundAction('aroundAction', { only: 'around' });
       this.$beforeAction('beforeAction', { only: 'before' });

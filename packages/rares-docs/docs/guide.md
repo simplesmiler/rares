@@ -33,8 +33,8 @@ Create this file, and let's make a couple endpoints:
 
 ```js
 // config/routes.js
-module.exports = (App, Rares) => {
-  const { get, post } = Rares.Router;
+module.exports = App => {
+  const { get, post } = App.Router;
   return [
     get('/', { controller: 'home', action: 'index' }),
     post('echo', { controller: 'home' }),
@@ -42,9 +42,9 @@ module.exports = (App, Rares) => {
 };
 ```
 
-As you can see, we export a function with `(App, Rares) -> Value` signature, with `Value` in this case being an array.
+As you can see, we export a function with `App -> Value` signature, with `Value` in this case being an array.
 The exact structure of this array is an implementation detail, so you should not worry about it too much.
-And the signature allows us to access things without requiring them directly, like the `Rares.Router` we are accessing here.
+And the signature allows us to access things without requiring them directly, like the `App.Router` we are accessing here.
 If you want details, read the [Loading](#loading) section.
 
 The `get` route above exposes the `GET /` endpoint, and associates it with the `index` action of the `home` controller,
@@ -58,7 +58,7 @@ which is expected to be located at `app/controllers/home.js`. Let's create this 
 
 ```js
 // app/controllers/home.js
-module.exports = (App, Rares) => class extends Rares.Controller {
+module.exports = App => class extends App.Controller {
   async index() {
     return { message: 'Welcome!' };
   }
@@ -68,8 +68,8 @@ module.exports = (App, Rares) => class extends Rares.Controller {
 };
 ```
 
-Again, we see this `(App, Rares) -> Value` signature, but this time the `Value` is an anonymous class,
-that extends the base class `Rares.Controller` and defines actions. Let's talk more about these.
+Again, we see this `App -> Value` signature, but this time the `Value` is an anonymous class,
+that extends the base class `App.Controller` and defines actions. Let's talk more about these.
 
 ### Actions
 
@@ -124,8 +124,8 @@ Let's define routes for the products.
 
 ```js{6}
 // config/routes.js
-module.exports = (App, Rares) => {
-  const { post, resources } = Rares.Router;
+module.exports = App => {
+  const { post, resources } = App.Router;
   return [
     post('echo', { controller: 'home' }),
     resources('products'),
@@ -156,7 +156,7 @@ Now on to products controller:
 
 ```js
 // app/controllers/product.js
-module.exports = (App, Rares) => class extends Rares.Controller {
+module.exports = App => class extends App.Controller {
   static $setup() {
     // @NOTE: `this` here is the controller class
     this.$resource();
@@ -185,10 +185,9 @@ You can also see `productParams`, and it is used by the default implementation o
 
 ### Loading
 
-Pretty much every file you write in Rares will have the special `(App, Rares) => Value` signature.
+Pretty much every file you write in Rares will have the special `App -> Value` signature.
 
-This is the way Rares implements it's custom module loading mechanism.
-The `App` is the instance of your application, and the `Rares` contains everything that does not fit on the instance.
+This is the way Rares implements it's custom module loading mechanism. The `App` is the instance of your application.
 
 You can load other modules with `App.Load('path/to/module')` with paths relative to the `/app` folder.
 
@@ -204,7 +203,7 @@ You can configure certain aspects of Rares with the `rares.config.js` file place
 
 ```js
 // rares.config.js
-module.exports = async (App, Rares) => {
+module.exports = async App => {
   return {
     // Override the path to the root directory.
     // Do not do this unless you need to do something unconventional.
@@ -231,7 +230,7 @@ To return the result with specific headers or specific HTTP status, Rares provid
 
 ```js
 // app/controllers/demo.js
-module.exports = (App, Rares) => class extends Rares.Controller {
+module.exports = App => class extends App.Controller {
   async index() {
     const message = 'Demoing http statuses and headers';
     const headers = { 'X-Custom-Header': 'Custom header with value' };
@@ -260,7 +259,7 @@ They are supposed to live in the `config/secrets.js` file:
 
 ```js
 // config/secrets.js
-module.exports = async (App, Rares) => {
+module.exports = async App => {
   return {
     development: {
       secretKeyBase: 'never-use-this-key-base-in-production',
@@ -306,7 +305,7 @@ To associate data with clients, Rares provide you with a storage utility:
 
 ```js
 // app/controllers/session.js
-module.exports = (App, Rares) => class extends Rares.Controller {
+module.exports = App => class extends App.Controller {
   async store() {
     await this.$store(this.$params.key, this.$params.value);
     return { value: await this.$load(this.$params.key) }; 
@@ -335,7 +334,7 @@ To perform something that does not belong to a single action, you can use action
 
 ```js
 // app/controllers/items.js
-module.exports = (App, Rares) => class extends Rares.Controller {
+module.exports = App => class extends App.Controller {
   static $setup() {
     this.$beforeAction('preloadData');
   }
@@ -361,12 +360,12 @@ and generic `$aroundAction`, with which you can do all of the above.
 
 ### Controller inheritance
 
-Besides extending the base `Rares.Controller`, you can extend your own controllers.
+Besides extending the base `App.Controller`, you can extend your own controllers.
 
 ```js
 // app/controllers/application.js
 let nextRequestId = 1;
-module.exports = (App, Rares) => class extends Rares.Controller {
+module.exports = App => class extends App.Controller {
   static $setup() {
     this.$aroundAction('wrapAction');
   }
@@ -391,7 +390,7 @@ module.exports = (App, Rares) => class extends Rares.Controller {
 
 ```js
 // app/controllers/index.js
-module.exports = (App, Rares) => class extends App.Load('controllers/application') {
+module.exports = App => class extends App.Load('controllers/application') {
   async index() {
     return { message: 'Hello!' }; 
   }
@@ -410,8 +409,8 @@ You can use `scope` to do that:
 
 ```js
 // config/routes.js
-module.exports = (App, Rares) => {
-  const { scope, get } = Rares.Router;
+module.exports = App => {
+  const { scope, get } = App.Router;
   return [
     scope('api', [
       get('/', { controller: 'home', action: 'index' }),

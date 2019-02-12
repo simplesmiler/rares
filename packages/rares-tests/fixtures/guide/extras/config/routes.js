@@ -1,5 +1,5 @@
-module.exports = (App, Rares) => {
-  const { scope, get, put } = Rares.Router;
+module.exports = App => {
+  const { scope, get, put } = App.Router;
   return [
     // @SECTION: action hooks
     scope('hooks', [

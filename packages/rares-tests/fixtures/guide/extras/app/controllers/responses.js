@@ -1,4 +1,4 @@
-module.exports = (App, Rares) => class extends Rares.Controller {
+module.exports = App => class extends App.Controller {
   async index() {
     const message = 'This action will respond with requested status and headers';
     return this.$response({ message }, {

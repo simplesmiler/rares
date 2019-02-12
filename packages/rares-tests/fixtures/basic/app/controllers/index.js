@@ -1,4 +1,4 @@
-module.exports = (App, Rares) => class IndexController extends Rares.Controller {
+module.exports = App => class IndexController extends App.Controller {
 
   async index() {
     return {

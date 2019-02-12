@@ -1,4 +1,4 @@
-module.exports = async (App, Rares) => {
+module.exports = async App => {
   return {
     development: {
       dialect: 'sqlite',
