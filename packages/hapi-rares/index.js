@@ -25,6 +25,9 @@ module.exports = {
       });
     }
 
+    // @TODO: Define what to do when changes happen:
+    //        - Route file changed
+
     const routes = convertRoutes(server, App);
     await server.route(routes);
   },

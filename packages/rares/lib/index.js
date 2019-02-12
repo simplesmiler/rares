@@ -237,6 +237,7 @@ module.exports = class Rares {
     };
 
     // @TODO: Do this only in dev mode
+    // @TODO: Replace with a more generic mechanism for restarting
     const wp = new Watchpack({ ignored: [/node_modules/] });
     wp.watch([], [this.config.dir], Date.now());
     wp.on('change', filePath => {

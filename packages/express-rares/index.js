@@ -24,6 +24,9 @@ module.exports = async function ExpressRares(opts) {
 
   await registerRoutes(expressRouter, App);
 
+  // @TODO: Define what to do when changes happen:
+  //        - Route file changed
+
   return function(req, res, next) {
     return expressRouter(req, res, err => {
       try {
