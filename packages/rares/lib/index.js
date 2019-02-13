@@ -49,13 +49,14 @@ module.exports = class Rares {
   constructor(opts) {
     this.$destroyed = false;
 
+    this.$loaderEnhancements = [];
     this.$destroyCallbacks = [];
     this.opts = opts || {};
   }
 
   async $initialize() {
     const steps = [
-      // == @SECTION: figure out config file == //
+      // == @SECTION: figure out config == //
       async App => {
         const cwd = _.get(App.opts, 'dir') || process.cwd();
 
@@ -189,6 +190,17 @@ module.exports = class Rares {
         for (const module of modules) {
           module(App);
         }
+
+        App.$loaderEnhancements.push({
+          prefix: 'controllers/',
+          handler(name, loaded) {
+            if (loaded.$doSetup == null) {
+              throw new Error(`Controller '${name}' does not seem to extend App.Controller`);
+            }
+            loaded.$doSetup();
+            return loaded;
+          },
+        });
       },
       // == @SECTION: setup loader == //
       async App => {
@@ -201,10 +213,12 @@ module.exports = class Rares {
           const filePath = require.resolve(absoluteName);
           const properModuleName = moduleName.endsWith('.js') ? moduleName.slice(0, -3) : moduleName;
 
-          // @NOTE: If module cache was not busted, then just pick it up
+          // @NOTE: Track this module as dependency
           for (const stackFilePath of loaderStack) {
             loaderDeps[stackFilePath].push(filePath);
           }
+
+          // @NOTE: If module cache was not busted, then just pick it up
           let loaded = loaderCache[filePath];
           if (loaded) return loaded;
 
@@ -214,36 +228,37 @@ module.exports = class Rares {
           // @NOTE: Setup for tracking dependencies, and load the module
           loaderStack.push(filePath);
           loaderDeps[filePath] = [];
-          loaded = require(filePath)(App); // @NOTE: For now, modules do not support async and direct export variants
-          loaderStack.shift();
-
-          // @NOTE: Enhance controllers
-          if (properModuleName.startsWith('controllers/')) {
-            const controllerName = properModuleName.slice('controllers/'.length);
-            if (loaded == null) {
-              throw new Error(`Controller '${controllerName}' does not seem to export anything`);
+          try {
+            loaded = require(filePath); // @NOTE: For now, modules do not support async and direct export variants
+            if (!_.isFunction(loaded)) {
+              throw new Error(`Module does not seem to have a proper signature, has to be a function`);
             }
-            if (loaded instanceof Promise) {
-              throw new Error(`Controller '${controllerName}' seems to export async value, which is not supported for modules`);
-            }
-            if (loaded.$doSetup == null) {
-              throw new Error(`Controller '${controllerName}' does not seem to extend App.Controller`);
-            }
-            loaded.$doSetup();
+            loaded = loaded(App);
+          }
+          catch (err) {
+            throw new Error(`Failed to load module '${properModuleName}': ${err.message}`);
+          }
+          finally {
+            loaderStack.shift();
           }
 
-          // @TODO: Enhance models
+          // @NOTE: Make sure that module exported a reasonable value
+          if (loaded == null) {
+            throw new Error(`Module '${properModuleName}' does not seem to export anything`);
+          }
+          if (loaded instanceof Promise) {
+            throw new Error(`Module '${properModuleName}' seems to export async value, which is not supported for modules`);
+          }
 
-          // @NOTE: Enhance other modules
-          else {
-            if (loaded == null) {
-              throw new Error(`Module '${properModuleName}' does not seem to export anything`);
-            }
-            if (loaded instanceof Promise) {
-              throw new Error(`Module '${properModuleName}' seems to export async value, which is not supported for modules`);
+          // @NOTE: Enhance exported value
+          for (const enhancement of App.$loaderEnhancements) {
+            if (properModuleName.startsWith(enhancement.prefix)) {
+              const relativeModuleName = properModuleName.slice(enhancement.prefix.length);
+              loaded = enhancement.handler(relativeModuleName, loaded);
             }
           }
 
+          // @NOTE: Cache and return
           loaderCache[filePath] = loaded;
           return loaded;
         };
@@ -277,6 +292,8 @@ module.exports = class Rares {
           await App.sequelize.close();
         });
         await require('./sequelize')(App);
+
+        // @TODO: Enhance models
       },
       // == @SECTION: routes == //
       async App => {
