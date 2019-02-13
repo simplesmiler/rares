@@ -22,13 +22,13 @@ module.exports = App => {
         throw Boom.unauthorized('No auth signature');
       }
 
-      const user = await this.$app.Load(`models/user`).findByPrimary(id);
+      const user = await App.Load(`models/user`).findByPrimary(id);
       if (hard && user == null) {
         throw Boom.unauthorized('Did not find a user with given a auth signature');
       }
       this.currentUser = user;
 
-      const ability = await this.$app.Load('lib/ability').$for(user);
+      const ability = await App.Load('lib/ability').$for(user);
       this.currentAbility = ability;
     },
 

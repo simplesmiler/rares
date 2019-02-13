@@ -29,7 +29,7 @@ module.exports = App => {
 
   App.Controller.$extend({
     async $loadResource() {
-      const Model = this.$app.Load('models/' + this.$model);
+      const Model = App.Load('models/' + this.$model);
 
       // @TODO: support singleton resource
       // @TODO: support through
@@ -76,7 +76,7 @@ module.exports = App => {
         || null;
 
       const subject = singular && this[this.$model]
-        || plural && this.$app.Load(`models/${this.$model}`)
+        || plural && App.Load(`models/${this.$model}`)
         || null;
 
       if (!action || !subject) {
