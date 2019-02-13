@@ -13,6 +13,7 @@
     "axios-cookiejar-support": "^0.4.1",
     "express": "^4.16.4",
     "express-rares": "^0.2.0-alpha.0",
+    "fs-extra": "^7.0.1",
     "get-port": "^4.0.0",
     "hapi": "^17.8.1",
     "hapi-rares": "^0.2.0-alpha.0",

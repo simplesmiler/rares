@@ -9,6 +9,7 @@ const HapiRaresServer = require('hapi-rares/server');
 const ExpressRaresServer = require('express-rares/server');
 
 module.exports = {
+  getFixtureBasePath,
   makeFixture,
   backends: ['hapi', 'express'],
 };
@@ -16,6 +17,10 @@ module.exports = {
 // === //
 
 axiosCookieJarSupport(axios);
+
+async function getFixtureBasePath() {
+  return path.resolve(__dirname, 'fixtures');
+}
 
 async function makeFixture(name, options) {
   const dir = path.resolve(__dirname, 'fixtures', name);
