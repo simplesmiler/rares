@@ -1,7 +1,7 @@
 const inflect = require('inflect');
 
-module.exports = Contoller => {
-  Contoller.$extendStatic({
+module.exports = App => {
+  App.Controller.$extendStatic({
     $resource(opts) {
       this.$aroundAction({
         async handler(fn) {
@@ -27,7 +27,7 @@ module.exports = Contoller => {
     },
   });
 
-  Contoller.$extend({
+  App.Controller.$extend({
     async $loadResource() {
       const Model = this.$app.Load('models/' + this.$model);
 

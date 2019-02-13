@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const Response = require('./response');
 
-class Controller {
+module.exports = class RaresController {
 
   constructor(fields) {
     _.assign(this, fields);
@@ -207,17 +207,4 @@ class Controller {
     return new Response(value, opts);
   }
 
-}
-
-const modules = [
-  require('./modules/resource'),
-  require('./modules/session'),
-  require('./modules/authenticate'),
-  require('./modules/authorize'),
-];
-
-for (const module of modules) {
-  module(Controller);
-}
-
-module.exports = Controller;
+};

@@ -1,7 +1,7 @@
 const Boom = require('boom');
 
-module.exports = Contoller => {
-  Contoller.$extend({
+module.exports = App => {
+  App.Controller.$extend({
     async $can(action, subject) {
       if (!this.currentAbility) return false;
       return this.currentAbility.$can(action, subject, this);

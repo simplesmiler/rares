@@ -1,7 +1,7 @@
 const Boom = require('boom');
 
-module.exports = Contoller => {
-  Contoller.$extend({
+module.exports = App => {
+  App.Controller.$extend({
     async $signIn(id) {
       await this.$store('auth', id);
       await this.$authenticate();

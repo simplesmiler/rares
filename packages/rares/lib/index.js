@@ -18,10 +18,6 @@ module.exports = class Rares {
     return Boom;
   }
 
-  get Controller() {
-    return require('./controller');
-  }
-
   get Ability() {
     return require('./ability');
   }
@@ -174,6 +170,24 @@ module.exports = class Rares {
           if (App.config.whiny) {
             console.warn(`Failed to require config/environments/${App.env}.js file, continuing without it: ${err.message}`);
           }
+        }
+      },
+      // == @SECTION: setup base controller == //
+      async App => {
+        const RaresController = require('./controller');
+        App.Controller = class Controller extends RaresController {
+          // @NOTE: Noop
+        };
+
+        const modules = _.compact([
+          require('./controller-modules/resource'),
+          require('./controller-modules/session'),
+          require('./controller-modules/authenticate'),
+          require('./controller-modules/authorize'),
+        ]);
+
+        for (const module of modules) {
+          module(App);
         }
       },
       // == @SECTION: setup loader == //
