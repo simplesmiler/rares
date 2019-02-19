@@ -23,15 +23,9 @@ module.exports = async function ExpressRares(opts) {
 
   await registerRoutes(expressRouter, App);
 
-  // @TODO: Define what to do when changes happen:
-  //        - Route file changed
-
   return function(req, res, next) {
     return expressRouter(req, res, err => {
       try {
-        // @NOTE: In case of a missing route, we handle it here instead of delegating back to express
-        if (!err) err = App.Boom.notFound();
-
         // @NOTE: Make sure all errors are wrapped
         err = App.$wrapError(err);
 
@@ -44,6 +38,7 @@ module.exports = async function ExpressRares(opts) {
       }
       catch (err2) {
         // @NOTE: Safety net, we should never actually land here, unless something goes horribly wrong
+        console.error('Unhandled error', err2);
         next(err2);
       }
     });

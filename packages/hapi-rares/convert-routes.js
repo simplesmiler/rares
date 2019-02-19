@@ -1,6 +1,4 @@
 const _ = require('lodash');
-const qs = require('qs');
-const pathToRegexp = require('path-to-regexp');
 
 module.exports = function convert(server, App) {
   const Rares = App.constructor;
@@ -29,44 +27,38 @@ module.exports = function convert(server, App) {
     });
   }
 
-  const routes = [];
-
-  App.Router.$walk(App.routes, entry => {
-    const { controller: controllerName, action: actionName, model: modelName, path, method } = entry;
-
-    // @NOTE: Hapi uses different syntax for paths, so we have to convert
-    const hapiPath = convertPath(path);
-
-    // @TODO: In build/start mode load the class here
-    let ControllerClass;
-
-    routes.push({
-      path: hapiPath,
-      method,
+  return [
+    {
+      method: '*',
+      path: '/{_*}',
       async handler(request, h) {
-        const body = request.payload;
-        const query = request.url.search ? qs.parse(request.url.search.slice(1), { decoder: decode }) : {};
-        const segments = request.params;
-        const params = _.defaultsDeep(null, segments, query, body);
-
-        // @TODO: Do this only in dev mode
-        ControllerClass = App.Load('controllers/' + controllerName);
-
-        const controller = new ControllerClass({
-          // @NOTE: generic application stuff
-          $app: App,
-
-          // @NOTE: hapi-specific request stuff
-          $request: request,
-
-          // @NOTE: generic request stuff
-          $params: params,
-          $model: modelName,
-          $controller: controllerName,
-          $action: actionName,
-        });
-
         try {
+          const entry = App.$matchRoute(request.method, request.url.path);
+          if (!entry) throw App.Boom.notFound();
+          const { route, query, segments } = entry;
+
+          const { controller: controllerName, action: actionName, model: modelName } = route;
+
+          const body = request.payload;
+          const params = _.defaultsDeep(null, segments, query, body);
+
+          // @TODO: Do this only in dev mode
+          const ControllerClass = App.Load('controllers/' + controllerName);
+
+          const controller = new ControllerClass({
+            // @NOTE: generic application stuff
+            $app: App,
+
+            // @NOTE: hapi-specific request stuff
+            $request: request,
+
+            // @NOTE: generic request stuff
+            $params: params,
+            $model: modelName,
+            $controller: controllerName,
+            $action: actionName,
+          });
+
           const result = await controller.$run();
           const response = h.response(JSON.stringify(result.value)); // @FIXME: This is awful
 
@@ -94,37 +86,6 @@ module.exports = function convert(server, App) {
           throw App.$wrapError(err);
         }
       },
-    });
-  });
-
-  return routes;
+    },
+  ];
 };
-
-// === //
-
-function decode(str) {
-  try {
-    str = decodeURIComponent(str.replace(/\+/g, ' '));
-    return JSON.parse(str);
-  }
-  catch (err) {
-    return str;
-  }
-}
-
-// @TODO: Make more robust converter
-function convertPath(path) {
-  // @NOTE: Collect participating params
-  const keys = [];
-  pathToRegexp(path, keys);
-
-  // @NOTE: Wrap param names in brackets
-  const values = {};
-  for (const key of keys) {
-    values[key.name] = '{' + key.name + '}';
-  }
-
-  // @NOTE: Use bracketed names as values
-  const toPath = pathToRegexp.compile(path);
-  return toPath(values, { encode: (value, token) => value });
-}

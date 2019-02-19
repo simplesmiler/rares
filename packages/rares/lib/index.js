@@ -1,6 +1,8 @@
 const findFileUp = require('find-file-up');
 const path = require('path');
 const _ = require('lodash');
+const qs = require('qs');
+const matchit = require('matchit');
 const Boom = require('boom');
 const Watchpack = require('watchpack');
 
@@ -92,6 +94,94 @@ module.exports = class Rares {
       // == @SECTION: figure out env == //
       async App => {
         App.env = _.get(App.opts, 'env', process.env.NODE_ENV || 'development');
+      },
+      // == @SECTION: setup loader == //
+      async App => {
+        const loaderCache = {};
+        const loaderStack = [];
+        const loaderDeps = {};
+        const virtualModules = {};
+
+        App.Register = (moduleName, module, opts) => {
+          virtualModules[moduleName] = module;
+        };
+
+        App.Load = (moduleName, opts) => {
+          const root = _.get(opts, 'root') || false;
+          const virtual = _.get(opts, 'virtual') || false;
+
+          const absoluteName = virtual ? moduleName : path.resolve(App.config.dir, root ? '' : 'app', moduleName);
+          const filePath = virtual ? absoluteName : require.resolve(absoluteName);
+          const properModuleName = moduleName.endsWith('.js') ? moduleName.slice(0, -3) : moduleName;
+
+          // @NOTE: Track this module as dependency
+          for (const stackFilePath of loaderStack) {
+            loaderDeps[stackFilePath].push(filePath);
+          }
+
+          // @NOTE: If module cache was not busted, then just pick it up
+          let loaded = loaderCache[filePath];
+          if (loaded) return loaded;
+
+          // @NOTE: Make sure that module is loaded fresh
+          delete require.cache[filePath];
+
+          // @NOTE: Setup for tracking dependencies, and load the module
+          loaderStack.push(filePath);
+          loaderDeps[filePath] = [];
+          try {
+            loaded = virtual ? virtualModules[moduleName] : require(filePath); // @NOTE: For now, modules do not support async and direct export variants
+            if (!_.isFunction(loaded)) {
+              throw new Error(`Module does not seem to have a proper signature, has to be a function`);
+            }
+            loaded = loaded(App);
+          }
+          catch (err) {
+            throw new Error(`Failed to load module '${properModuleName}': ${err.message}`);
+          }
+          finally {
+            loaderStack.shift();
+          }
+
+          // @NOTE: Make sure that module exported a reasonable value
+          if (loaded == null) {
+            throw new Error(`Module '${properModuleName}' does not seem to export anything`);
+          }
+          if (loaded instanceof Promise) {
+            throw new Error(`Module '${properModuleName}' seems to export async value, which is not supported for modules`);
+          }
+
+          // @NOTE: Enhance exported value
+          for (const enhancement of App.$loaderEnhancements) {
+            if (properModuleName.startsWith(enhancement.prefix)) {
+              const relativeModuleName = properModuleName.slice(enhancement.prefix.length);
+              loaded = enhancement.handler(relativeModuleName, loaded);
+            }
+          }
+
+          // @NOTE: Cache and return
+          loaderCache[filePath] = loaded;
+          return loaded;
+        };
+
+        // @TODO: Do this only in dev mode
+        // @TODO: Replace with a more generic mechanism for restarting
+        const wp = new Watchpack({ ignored: [/node_modules/] });
+        wp.watch([], [App.config.dir], Date.now());
+        wp.on('change', filePath => {
+          // @NOTE: Busting the changed file itself
+          delete loaderCache[filePath];
+
+          // @NOTE: Busting all dependants
+          for (const dependantFilePath of Object.keys(loaderDeps)) {
+            if (loaderDeps[dependantFilePath].includes(filePath)) {
+              delete loaderCache[dependantFilePath];
+            }
+          }
+        });
+        App.$destroyCallbacks.push(async () => {
+          wp.close();
+        });
       },
       // == @SECTION: load secrets file == //
       async App => {
@@ -202,86 +292,6 @@ module.exports = class Rares {
           },
         });
       },
-      // == @SECTION: setup loader == //
-      async App => {
-        const loaderCache = {};
-        const loaderStack = [];
-        const loaderDeps = {};
-
-        App.Load = moduleName => {
-          const absoluteName = path.resolve(App.config.dir, 'app', moduleName);
-          const filePath = require.resolve(absoluteName);
-          const properModuleName = moduleName.endsWith('.js') ? moduleName.slice(0, -3) : moduleName;
-
-          // @NOTE: Track this module as dependency
-          for (const stackFilePath of loaderStack) {
-            loaderDeps[stackFilePath].push(filePath);
-          }
-
-          // @NOTE: If module cache was not busted, then just pick it up
-          let loaded = loaderCache[filePath];
-          if (loaded) return loaded;
-
-          // @NOTE: Make sure that module is loaded fresh
-          delete require.cache[filePath];
-
-          // @NOTE: Setup for tracking dependencies, and load the module
-          loaderStack.push(filePath);
-          loaderDeps[filePath] = [];
-          try {
-            loaded = require(filePath); // @NOTE: For now, modules do not support async and direct export variants
-            if (!_.isFunction(loaded)) {
-              throw new Error(`Module does not seem to have a proper signature, has to be a function`);
-            }
-            loaded = loaded(App);
-          }
-          catch (err) {
-            throw new Error(`Failed to load module '${properModuleName}': ${err.message}`);
-          }
-          finally {
-            loaderStack.shift();
-          }
-
-          // @NOTE: Make sure that module exported a reasonable value
-          if (loaded == null) {
-            throw new Error(`Module '${properModuleName}' does not seem to export anything`);
-          }
-          if (loaded instanceof Promise) {
-            throw new Error(`Module '${properModuleName}' seems to export async value, which is not supported for modules`);
-          }
-
-          // @NOTE: Enhance exported value
-          for (const enhancement of App.$loaderEnhancements) {
-            if (properModuleName.startsWith(enhancement.prefix)) {
-              const relativeModuleName = properModuleName.slice(enhancement.prefix.length);
-              loaded = enhancement.handler(relativeModuleName, loaded);
-            }
-          }
-
-          // @NOTE: Cache and return
-          loaderCache[filePath] = loaded;
-          return loaded;
-        };
-
-        // @TODO: Do this only in dev mode
-        // @TODO: Replace with a more generic mechanism for restarting
-        const wp = new Watchpack({ ignored: [/node_modules/] });
-        wp.watch([], [App.config.dir], Date.now());
-        wp.on('change', filePath => {
-          // @NOTE: Busting the changed file itself
-          delete loaderCache[filePath];
-
-          // @NOTE: Busting all dependants
-          for (const dependantFilePath of Object.keys(loaderDeps)) {
-            if (loaderDeps[dependantFilePath].includes(filePath)) {
-              delete loaderCache[dependantFilePath];
-            }
-          }
-        });
-        App.$destroyCallbacks.push(async () => {
-          wp.close();
-        });
-      },
       // == @SECTION: setup models == //
       async App => {
         if (!App.config.features.database) return;
@@ -297,13 +307,21 @@ module.exports = class Rares {
       },
       // == @SECTION: routes == //
       async App => {
-        try {
-          // @TODO: support json and non-function variant
-          App.routes = await require(path.resolve(App.config.dir, 'config/routes'))(App);
-        }
-        catch (err) {
-          throw new Error(`Failed to require config/routes.js file: ${err.message}`);
-        }
+        App.Register('#/route-index', App => {
+          // @TODO: Do this only in dev mode
+          const routes = App.Load('config/routes', { root: true });
+
+          const index = {};
+          this.Router.$walk(routes, entry => {
+            const method = entry.method.toLowerCase();
+            if (!(method in index)) {
+              index[method] = {};
+            }
+            index[method][entry.path] = entry;
+          });
+
+          return index;
+        });
       },
     ];
 
@@ -321,6 +339,26 @@ module.exports = class Rares {
 
     this.$destroyed = true;
   }
+
+  $matchRoute(method, url) {
+    const index = this.Load('#/route-index', { virtual: true });
+
+    method = method.toLowerCase();
+    const parts = url.split('?');
+    const path = parts[0];
+    const query = parts.length > 1 ? qs.parse(parts.slice(1).join('?'), { decoder }) : {};
+
+    const patterns = _.keys(index[method]).map(matchit.parse);
+    const match = matchit.match(path, patterns);
+    if (match.length === 0) return null;
+
+    const pattern = match[0].old;
+    const segments = matchit.exec(path, patterns);
+
+    return { route: index[method][pattern], query, segments };
+  }
+
+  // @TODO: Handle virtual requests
 
   $wrapError(err) {
     // @NOTE: Keep explicit http errors as is
@@ -355,3 +393,13 @@ module.exports = class Rares {
   }
 
 };
+
+function decoder(str) {
+  try {
+    str = decodeURIComponent(str.replace(/\+/g, ' '));
+    return JSON.parse(str);
+  }
+  catch (err) {
+    return str;
+  }
+}
