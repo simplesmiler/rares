@@ -1,4 +1,4 @@
-module.exports = async App => {
+module.exports = App => {
   return {
     features: {
       database: true,

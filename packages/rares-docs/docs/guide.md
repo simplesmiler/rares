@@ -203,7 +203,7 @@ You can configure certain aspects of Rares with the `rares.config.js` file place
 
 ```js
 // rares.config.js
-module.exports = async App => {
+module.exports = App => {
   return {
     // Override the path to the root directory.
     // Do not do this unless you need to do something unconventional.
@@ -259,7 +259,7 @@ They are supposed to live in the `config/secrets.js` file:
 
 ```js
 // config/secrets.js
-module.exports = async App => {
+module.exports = App => {
   return {
     development: {
       secretKeyBase: 'never-use-this-key-base-in-production',
