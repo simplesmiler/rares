@@ -72,7 +72,7 @@ for (const name of ['options', 'head', 'get', 'post', 'put', 'patch', 'delete'])
 
 async function makeAxiosClient(baseURL) {
   const cookieJar = new tough.CookieJar();
-  const client = axios.create({ baseURL, jar: cookieJar, withCredentials: true });
+  const client = axios.create({ baseURL, jar: cookieJar, withCredentials: true, validateStatus: () => true });
   Object.assign(client, mixin);
   return client;
 }

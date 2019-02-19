@@ -21,13 +21,9 @@ for (const backend of backends) {
 
     test('Says 404 with JSON body to not existing resources', async () => {
       expect.assertions(2);
-      try {
-        await fixture.axios.get('/no-such-resource');
-      }
-      catch (err) {
-        expect(err.response.status).toBe(404);
-        expect(err.response.data).toEqual({ statusCode: 404, error: 'Not Found', message: 'Not Found' });
-      }
+      const response = await fixture.axios.get('/no-such-resource');
+      expect(response.status).toBe(404);
+      expect(response.data).toEqual({ statusCode: 404, error: 'Not Found', message: 'Not Found' });
     });
 
     test('Memory is empty', async () => {
