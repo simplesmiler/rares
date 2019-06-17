@@ -328,9 +328,16 @@ Sessions utility depends on secrets, so you have to enable them in the config.
 @TODO(v0.4): Talk about it after documenting models, integrate into the shop example.
 -->
 
+### Controller extensions
+
+When a controller has a static method `$setup`, Rares will call this method when the controller is loaded.
+
+During the `$setup`, other static methods can be called. Such methods are referred to as controller extensions,
+and Rares provides a few.
+
 ### Action hooks
 
-To perform something that does not belong to a single action, you can use action hooks:
+Action hooks are controller extensions that allow you to attach extra behavior to other actions:
 
 ```js
 // app/controllers/items.js
@@ -356,7 +363,10 @@ module.exports = App => class extends App.Controller {
 
 Paired with `$beforeAction`, there is `$afterAction`.
 Also there is `$rescueFrom` for recovering from exceptions in actions,
-and generic `$aroundAction`, with which you can do all of the above.  
+and generic `$aroundAction`, with which you can do all of the above.
+
+By default, action hooks are applied to all actions,
+but they can be scoped to specific actions using `only` and `except` options.
 
 ### Controller inheritance
 
