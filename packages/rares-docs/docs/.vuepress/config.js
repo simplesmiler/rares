@@ -10,7 +10,7 @@ module.exports = {
     editLinkText: 'Improve this page!',
     nav: [
       { text: 'Guide', link: '/guide.html' },
-      { text: 'API', link: '/reference.html' },
+      { text: 'API', link: '/api.html' },
     ],
   },
 };

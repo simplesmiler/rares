@@ -6,11 +6,6 @@ sidebar: auto
 
 This guide assumes that you have some prior knowledge of Node.js and modern JavaScript and have some experience with the command line.
 
-The guide is split in three parts.
-First one goes over the basics of Rares.
-Second one provides a complete example of building an API.
-Third one fills you in on some concepts that did not fit into the example.   
-
 ## Basics
 
 In this part we will build a simplistic API to cover basic concepts of Rares.
