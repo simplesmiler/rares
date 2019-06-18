@@ -15,7 +15,7 @@ sidebar: auto
 ### `rares.config.js`
 ### `config/routes.js`
 ### `config/secrets.js`
-### `app/controllers`
+### `controllers`
 
 ## Application
 

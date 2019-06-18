@@ -35,7 +35,7 @@ module.exports = async function(App) {
 
   // == @SECTION: init and associate models == //
 
-  const modelsDir = path.resolve(dir, 'app/models');
+  const modelsDir = path.resolve(dir, 'models');
 
   if (fs.existsSync(modelsDir)) {
     const models = {};

@@ -31,7 +31,7 @@ module.exports = App => {
 ```
 
 ```js
-// app/controllers/memory.js
+// controllers/memory.js
 module.exports = App => {
   let value = null; // @NOTE: in the real world you would have a data store
 

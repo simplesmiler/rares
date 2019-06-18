@@ -107,10 +107,9 @@ module.exports = class Rares {
         };
 
         App.Load = (moduleName, opts) => {
-          const root = _.get(opts, 'root') || false;
           const virtual = _.get(opts, 'virtual') || false;
 
-          const absoluteName = virtual ? moduleName : path.resolve(App.config.dir, root ? '' : 'app', moduleName);
+          const absoluteName = virtual ? moduleName : path.resolve(App.config.dir, moduleName);
           const filePath = virtual ? absoluteName : require.resolve(absoluteName);
           const properModuleName = moduleName.endsWith('.js') ? moduleName.slice(0, -3) : moduleName;
 
@@ -309,7 +308,7 @@ module.exports = class Rares {
       async App => {
         App.Register('#/route-index', App => {
           // @TODO: Do this only in dev mode
-          const routes = App.Load('config/routes', { root: true });
+          const routes = App.Load('config/routes');
 
           const index = {};
           this.Router.$walk(routes, entry => {

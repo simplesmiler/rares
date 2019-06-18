@@ -49,10 +49,10 @@ and the `post` route exposes `POST /echo` with action `echo` of controller `home
 
 While routes define the API surface, controller is what handles actual incoming requests.
 In the routes we mapped `GET /` and `POST /echo` to actions `index` and `echo` of the controller `home`,
-which is expected to be located at `app/controllers/home.js`. Let's create this controller:
+which is expected to be located at `controllers/home.js`. Let's create this controller:
 
 ```js
-// app/controllers/home.js
+// controllers/home.js
 module.exports = App => class extends App.Controller {
   async index() {
     return { message: 'Welcome!' };
@@ -150,7 +150,7 @@ You can also add your own endpoints, but we will talk about that later.
 Now on to products controller:
 
 ```js
-// app/controllers/product.js
+// controllers/product.js
 module.exports = App => class extends App.Controller {
   static $setup() {
     // @NOTE: `this` here is the controller class
@@ -184,7 +184,7 @@ Pretty much every file you write in Rares will have the special `App -> Value` s
 
 This is the way Rares implements it's custom module loading mechanism. The `App` is the instance of your application.
 
-You can load other modules with `App.Load('path/to/module')` with paths relative to the `/app` folder.
+You can load other modules with `App.Load('path/to/module')` with paths relative to the app root directory.
 
 Benefits of this approach:
 
@@ -224,7 +224,7 @@ module.exports = App => {
 To return the result with specific headers or specific HTTP status, Rares provides you with response utility:
 
 ```js
-// app/controllers/demo.js
+// controllers/demo.js
 module.exports = App => class extends App.Controller {
   async index() {
     const message = 'Demoing http statuses and headers';
@@ -299,7 +299,7 @@ The "somewhere" may be environment variables, third party secrets store, encrypt
 To associate data with clients, Rares provide you with a storage utility:
 
 ```js
-// app/controllers/session.js
+// controllers/session.js
 module.exports = App => class extends App.Controller {
   async store() {
     await this.$store(this.$params.key, this.$params.value);
@@ -335,7 +335,7 @@ and Rares provides a few.
 Action hooks are controller extensions that allow you to attach extra behavior to other actions:
 
 ```js
-// app/controllers/items.js
+// controllers/items.js
 module.exports = App => class extends App.Controller {
   static $setup() {
     this.$beforeAction('preloadData');
@@ -368,7 +368,7 @@ but they can be scoped to specific actions using `only` and `except` options.
 Besides extending the base `App.Controller`, you can extend your own controllers.
 
 ```js
-// app/controllers/application.js
+// controllers/application.js
 let nextRequestId = 1;
 module.exports = App => class extends App.Controller {
   static $setup() {
@@ -394,7 +394,7 @@ module.exports = App => class extends App.Controller {
 ```
 
 ```js
-// app/controllers/index.js
+// controllers/index.js
 module.exports = App => class extends App.Load('controllers/application') {
   async index() {
     return { message: 'Hello!' }; 
