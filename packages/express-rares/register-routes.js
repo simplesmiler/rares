@@ -41,7 +41,7 @@ module.exports = function register(expressRouter, App) {
       const params = _.defaultsDeep(null, segments, query, body);
 
       // @TODO: Do this only in dev mode
-      const ControllerClass = App.Load('controllers/' + controllerName);
+      const ControllerClass = App.load('controllers/' + controllerName);
 
       const controller = new ControllerClass({
         // @NOTE: generic application stuff

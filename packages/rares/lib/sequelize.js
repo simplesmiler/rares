@@ -48,7 +48,7 @@ module.exports = async function(App) {
         return file.slice(0, -3);
       })
       .forEach(file => {
-        const Model = App.Load('models/' + file);
+        const Model = App.load('models/' + file);
         const attributes = Model.attributes ? Model.attributes() : {};
         const options = Model.options ? Model.options() : {};
         options.sequelize = App.sequelize;

@@ -106,7 +106,7 @@ module.exports = class Rares {
           virtualModules[moduleName] = module;
         };
 
-        App.Load = (moduleName, opts) => {
+        App.load = (moduleName, opts) => {
           const virtual = _.get(opts, 'virtual') || false;
 
           const absoluteName = virtual ? moduleName : path.resolve(App.config.dir, moduleName);
@@ -308,7 +308,7 @@ module.exports = class Rares {
       async App => {
         App.Register('#/route-index', App => {
           // @TODO: Do this only in dev mode
-          const routes = App.Load('config/routes');
+          const routes = App.load('config/routes');
 
           const index = {};
           this.Router.$walk(routes, entry => {
@@ -340,7 +340,7 @@ module.exports = class Rares {
   }
 
   $matchRoute(method, url) {
-    const index = this.Load('#/route-index', { virtual: true });
+    const index = this.load('#/route-index', { virtual: true });
 
     method = method.toLowerCase();
     const parts = url.split('?');

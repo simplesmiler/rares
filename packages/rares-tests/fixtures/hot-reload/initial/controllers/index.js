@@ -1,5 +1,5 @@
 module.exports = App => {
-  const PreloadedService = App.Load('services/preloaded');
+  const PreloadedService = App.load('services/preloaded');
   return class IndexController extends App.Controller {
     async controller() {
       return { message: 'controller-initial' };
@@ -8,7 +8,7 @@ module.exports = App => {
       return PreloadedService.get();
     }
     async dynamicService() {
-      const DynamicService = App.Load('services/dynamic');
+      const DynamicService = App.load('services/dynamic');
       return DynamicService.get();
     }
   };

@@ -184,7 +184,7 @@ Pretty much every file you write in Rares will have the special `App -> Value` s
 
 This is the way Rares implements it's custom module loading mechanism. The `App` is the instance of your application.
 
-You can load other modules with `App.Load('path/to/module')` with paths relative to the app root directory.
+You can load other modules with `App.load('path/to/module')` with paths relative to the app root directory.
 
 Benefits of this approach:
 
@@ -395,7 +395,7 @@ module.exports = App => class extends App.Controller {
 
 ```js
 // controllers/index.js
-module.exports = App => class extends App.Load('controllers/application') {
+module.exports = App => class extends App.load('controllers/application') {
   async index() {
     return { message: 'Hello!' }; 
   }
