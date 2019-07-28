@@ -35,17 +35,14 @@ module.exports = App => {
 module.exports = App => {
   let value = null; // @NOTE: in the real world you would have a data store
 
-  return class MemoryController extends App.Controller {
-
+  return class extends App.Controller {
     async show() {
       return { value };
     }
-
     async update() {
       value = this.$params.value;
       return { value };
     }
-
   };
 };
 ```

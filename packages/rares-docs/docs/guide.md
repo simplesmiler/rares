@@ -200,21 +200,13 @@ You can configure certain aspects of Rares with the `rares.config.js` file place
 // rares.config.js
 module.exports = App => {
   return {
-    // Override the path to the root directory.
-    // Do not do this unless you need to do something unconventional.
-    dir: process.cwd(),
-    
-    // Whether to complain in stdout when there are non-critical issues.
-    whiny: true,
-
-    // Whether to enable or disabled certain features.
-    features: {
-      secrets: false,
-    },
+    features: { secrets: true }, // Enable the secrets feature
   };
 };
 ```
- 
+
+You can see [full list of config options](/api.html#rares-config-js) on the API Reference page.
+
 ### Responses
 
 <!--
@@ -269,7 +261,7 @@ module.exports = App => {
 };
 ```
 
-This feature is experimental, and needs to be enabled with a flag:
+This feature is optional, and needs to be enabled with a flag:
 
 ```js
 // rares.config.js
@@ -338,7 +330,7 @@ Action hooks are controller extensions that allow you to attach extra behavior t
 // controllers/items.js
 module.exports = App => class extends App.Controller {
   static $setup() {
-    this.$beforeAction('preloadData');
+    this.$beforeAction('preloadItems');
   }
   async index() {
     return { items: this.items };
