@@ -9,6 +9,6 @@
   "author": "Denis Karabaza <denis.karabaza@gmail.com>",
   "license": "ISC",
   "dependencies": {
-    "vuepress": "^0.14.2"
+    "vuepress": "^1.0.2"
   }
 }

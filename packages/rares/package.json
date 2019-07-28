@@ -31,10 +31,10 @@
     "find-file-up": "^2.0.1",
     "get-prototype-chain": "^1.0.1",
     "inflect": "^0.4.0",
-    "lodash": "^4.17.10",
-    "matchit": "^1.0.7",
+    "lodash": "^4.17.15",
+    "matchit": "^1.0.8",
     "minimist": "^1.2.0",
-    "qs": "^6.6.0",
+    "qs": "^6.7.0",
     "watchpack": "^1.6.0"
   },
   "bugs": {
