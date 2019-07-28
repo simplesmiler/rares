@@ -24,6 +24,7 @@ module.exports = {
     'no-cond-assign': 'warn',
     'no-unused-vars': 'warn',
     'newline-per-chained-call': 'warn',
+    'no-invalid-this': 'off',
 
     // @NOTE: irrelevant
     'import/no-commonjs': 'off',
