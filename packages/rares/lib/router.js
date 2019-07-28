@@ -2,20 +2,12 @@ const _ = require('lodash');
 const inflect = require('inflect');
 
 module.exports = {
-  options, head, get, post, put, patch, del, // @NOTE: low-level routes
+  get, post, put, patch, del, // @NOTE: low-level routes
   scope, resource, resources, // @NOTE: high-level routes
   $walk, // @NOTE: utils
 };
 
 // == @SECTION: low-level routes == //
-
-function options(name, options) {
-  return $route('options', name, options);
-}
-
-function head(name, options) {
-  return $route('head', name, options);
-}
 
 function get(name, options) {
   return $route('get', name, options);
@@ -82,7 +74,7 @@ function $walk(routes, fn) {
   }
 
   function iterate(currentRoute, fn, basepath, resourceRoute) {
-    if (['options', 'head', 'get', 'post', 'put', 'patch', 'delete'].includes(currentRoute.type)) {
+    if (['get', 'post', 'put', 'patch', 'delete'].includes(currentRoute.type)) {
       const name = _.get(resourceRoute, 'name') || null;
       const singular = name ? inflect.singularize(name) : null;
       const plural = name ? inflect.pluralize(name) : null;
