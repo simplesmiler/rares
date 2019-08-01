@@ -15,8 +15,8 @@
     "hapi-rares": "^0.2.0-alpha.1",
     "pg": "^7.4.3",
     "rares": "^0.2.0-alpha.1",
-    "sequelize": "^4.44.2",
-    "sqlite3": "^4.0.6",
+    "sequelize": "^5.12.2",
+    "sqlite3": "^4.0.9",
     "umzug": "^2.1.0"
   }
 }
