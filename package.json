@@ -17,6 +17,6 @@
     "eslint": "^5.4.0",
     "eslint-config-node": "^3.0.0",
     "eslint-plugin-jest": "^21.21.0",
-    "lerna": "^3.8.5"
+    "lerna": "^3.16.4"
   }
 }
