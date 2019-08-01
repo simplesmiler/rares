@@ -1,6 +1,6 @@
 {
   "name": "express-rares",
-  "version": "0.2.0-alpha.3",
+  "version": "0.2.0-alpha.4",
   "description": "Rares bindings for Express",
   "main": "index.js",
   "repository": {
