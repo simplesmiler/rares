@@ -1,6 +1,6 @@
 {
   "name": "rares",
-  "version": "0.2.0-alpha.5",
+  "version": "0.2.0-alpha.6",
   "description": "Modern backend framework, inspired by Ruby on Rails",
   "main": "lib/index.js",
   "bin": {
