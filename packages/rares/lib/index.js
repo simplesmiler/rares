@@ -241,11 +241,11 @@ module.exports = class Rares {
         if (!App.config.features.bootstrap) return;
         try {
           // @NOTE: meaningless to have a non-function variant
-          await require(path.resolve(App.config.dir, 'config/boot'))(this);
+          await require(path.resolve(App.config.dir, 'hooks/boot'))(this);
         }
         catch (err) {
           if (App.config.whiny) {
-            console.warn(`Failed to require config/boot.js file, continuing without it: ${err.message}`);
+            console.warn(`Failed to require hooks/boot.js file, continuing without it: ${err.message}`);
           }
         }
       },
@@ -314,11 +314,11 @@ module.exports = class Rares {
         if (!App.config.features.bootstrap) return;
         try {
           // @NOTE: meaningless to have a non-function variant
-          await require(path.resolve(this.config.dir, 'config/application'))(App);
+          await require(path.resolve(this.config.dir, 'hooks/application'))(App);
         }
         catch (err) {
           if (App.config.whiny) {
-            console.warn(`Failed to require config/application.js file, continuing without it: ${err.message}`);
+            console.warn(`Failed to require hooks/application.js file, continuing without it: ${err.message}`);
           }
         }
       },
