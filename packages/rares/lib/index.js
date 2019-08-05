@@ -236,29 +236,16 @@ module.exports = class Rares {
           }
         }
       },
-      // == @SECTION: run application hook == //
+      // == @SECTION: run boot hook == //
       async App => {
         if (!App.config.features.bootstrap) return;
         try {
           // @NOTE: meaningless to have a non-function variant
-          await require(path.resolve(this.config.dir, 'config/application'))(App);
+          await require(path.resolve(App.config.dir, 'config/boot'))(this);
         }
         catch (err) {
           if (App.config.whiny) {
-            console.warn(`Failed to require config/application.js file, continuing without it: ${err.message}`);
-          }
-        }
-      },
-      // == @SECTION: run environment hook == //
-      async App => {
-        if (!App.config.features.bootstrap) return;
-        try {
-          // @NOTE: meaningless to have a non-function variant
-          await require(path.resolve(App.config.dir, 'config/environments', App.env))(this);
-        }
-        catch (err) {
-          if (App.config.whiny) {
-            console.warn(`Failed to require config/environments/${App.env}.js file, continuing without it: ${err.message}`);
+            console.warn(`Failed to require config/boot.js file, continuing without it: ${err.message}`);
           }
         }
       },
@@ -321,6 +308,19 @@ module.exports = class Rares {
 
           return index;
         });
+      },
+      // == @SECTION: run application hook == //
+      async App => {
+        if (!App.config.features.bootstrap) return;
+        try {
+          // @NOTE: meaningless to have a non-function variant
+          await require(path.resolve(this.config.dir, 'config/application'))(App);
+        }
+        catch (err) {
+          if (App.config.whiny) {
+            console.warn(`Failed to require config/application.js file, continuing without it: ${err.message}`);
+          }
+        }
       },
     ];
 
