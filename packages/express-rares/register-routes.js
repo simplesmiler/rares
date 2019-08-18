@@ -4,17 +4,17 @@ module.exports = function register(expressRouter, App) {
   if (App.secrets) {
     App.Controller.$extend({
       async $store(key, value) {
-        this.$request.session[key] = value;
+        this.$backendRequest.session[key] = value;
       },
       async $load(key) {
-        let value = this.$request.session[key];
+        let value = this.$backendRequest.session[key];
         if (value === undefined) {
           value = null;
         }
         return value;
       },
       async $clear(key) {
-        delete this.$request.session[key];
+        delete this.$backendRequest.session[key];
       },
     });
   }
@@ -48,6 +48,8 @@ module.exports = function register(expressRouter, App) {
         $app: App,
 
         // @NOTE: express-specific request stuff
+        // @NOTE: express modifies the original request, so there is no difference between $request and $backendRequest
+        $backendRequest: req,
         $request: req,
 
         // @NOTE: generic request stuff

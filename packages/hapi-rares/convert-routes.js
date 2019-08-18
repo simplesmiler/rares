@@ -6,13 +6,13 @@ module.exports = function convert(server, App) {
   if (App.secrets) {
     App.Controller.$extend({
       async $store(key, value) {
-        this.$request.yar.set(key, value);
+        this.$backendRequest.yar.set(key, value);
       },
       async $load(key) {
-        return this.$request.yar.get(key);
+        return this.$backendRequest.yar.get(key);
       },
       async $clear(key) {
-        this.$request.yar.clear(key);
+        this.$backendRequest.yar.clear(key);
       },
     });
   }
@@ -50,7 +50,8 @@ module.exports = function convert(server, App) {
             $app: App,
 
             // @NOTE: hapi-specific request stuff
-            $request: request,
+            $backendRequest: request,
+            $request: request.raw.req,
 
             // @NOTE: generic request stuff
             $params: params,
