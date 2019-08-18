@@ -29,6 +29,10 @@ module.exports = async function ExpressRares(opts) {
         // @NOTE: Make sure all errors are wrapped
         err = App.$wrapError(err);
 
+        if (err.isDeveloperError) {
+          console.error(err.stack);
+        }
+
         // @NOTE: Unwrapping boom error for express
         res.status(err.output.statusCode);
         res.set(err.output.headers);
