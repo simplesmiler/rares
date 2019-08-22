@@ -156,6 +156,12 @@ Contains the current configuration.
 
 Contains the secrets for current environment.
 
+### `App.resolve`
+
+Resolves file paths relative to application [root directory](#root-directory).
+
+Full signature: `(relativePath: String) -> absolutePath: String`.
+
 ### `App.load`
 
 Lets you load other Rares modules via a path, relative to the [root directory](#root-directory).

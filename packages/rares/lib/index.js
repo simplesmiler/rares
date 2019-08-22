@@ -106,10 +106,14 @@ module.exports = class Rares {
           virtualModules[moduleName] = module;
         };
 
+        App.resolve = relativeName => {
+          return path.resolve(App.config.dir, relativeName);
+        };
+
         App.load = (moduleName, opts) => {
           const virtual = _.get(opts, 'virtual') || false;
 
-          const absoluteName = virtual ? moduleName : path.resolve(App.config.dir, moduleName);
+          const absoluteName = virtual ? moduleName : App.resolve(moduleName);
           const filePath = virtual ? absoluteName : require.resolve(absoluteName);
           const properModuleName = moduleName.endsWith('.js') ? moduleName.slice(0, -3) : moduleName;
 
