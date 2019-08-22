@@ -354,7 +354,8 @@ Contains the name of the current action.
 
 ### `$params`
 
-Contains the params of the current request. Params are merged from all sources.
+Contains the params of the current request. Params are merged from all sources (query string, route segments,
+json payload). Query string and route segment params are additionally passed through a JSON parser if possible.
 
 Full signature: `Hash<name: String, value: Any>`.
 

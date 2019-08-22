@@ -352,7 +352,8 @@ module.exports = class Rares {
     if (match.length === 0) return null;
 
     const pattern = match[0].old;
-    const segments = matchit.exec(path, match);
+    const rawSegments = matchit.exec(path, match);
+    const segments = _.mapValues(rawSegments, decoder);
 
     return { route: index[method][pattern], query, segments };
   }
