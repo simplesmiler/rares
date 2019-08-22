@@ -1,3 +1,4 @@
+const Stream = require('stream');
 const _ = require('lodash');
 
 module.exports = function register(expressRouter, App) {
@@ -60,14 +61,14 @@ module.exports = function register(expressRouter, App) {
       });
 
       const result = await controller.$run();
-      const response = JSON.stringify(result.value); // @FIXME: This is awful
+      const response = result.value;
 
       const status = _.get(result.opts, 'status');
       if (status != null) {
         res.status(status);
       }
 
-      const type = _.get(result.opts, 'type', 'application/json');
+      const type = _.get(result.opts, 'type');
       if (type != null) {
         res.type(type);
       }
@@ -77,8 +78,23 @@ module.exports = function register(expressRouter, App) {
         res.set(headers);
       }
 
-      res.send(response);
-      res.end();
+      if (response instanceof Stream) {
+        res.status(status);
+        response.pipe(res);
+      }
+      else {
+        // @NOTE: Express has an edge case when sending numbers, where it treats them as a status,
+        //        so we send them as a buffer and force the type
+        // @REFERENCE: https://github.com/expressjs/express/issues/2227
+        if (typeof response === 'number') {
+          res.type(type || 'application/json');
+          res.send(Buffer.from(String(response)));
+        }
+        else {
+          res.send(response);
+        }
+        res.end();
+      }
     }
     catch (err) {
       next(err);

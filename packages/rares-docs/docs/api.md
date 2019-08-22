@@ -397,6 +397,25 @@ Arguments:
 - `options.status: Number` — Status code of the response. Default is `200`.
 - `options.headers: Hash<name: String, value: String>` — Additional HTTP headers of the response.
 
+Example:
+```js
+// controllers/about.js
+const fs = require('fs');
+module.exports = App => class extends App.Controller {
+  async text() {
+    return this.$response('The cake is a lie', {
+      type: 'text/plain',
+      status: 418,
+      headers: { 'X-Powered-By': 'Rares' },
+    });
+  }
+  async file() {
+    const stream = fs.createReadStream(App.resolve('static/image.png'));
+    return this.$response(stream, { type: 'image/png' });
+  }
+};
+```
+
 ### `$store`
 
 ::: tip
