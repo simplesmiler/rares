@@ -25,6 +25,7 @@ module.exports = {
     'no-unused-vars': 'warn',
     'newline-per-chained-call': 'warn',
     'no-invalid-this': 'off',
+    'no-use-before-define': 'off',
 
     // @NOTE: irrelevant
     'import/no-commonjs': 'off',
