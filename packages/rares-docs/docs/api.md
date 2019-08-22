@@ -28,8 +28,8 @@ Environment variables:
 - `PORT` is the port to listen on. Defaults to `3000`.
 
 Arguments:
-- `--server <server>`, `-s <server>` determines the web server that will be used.
-  Supported servers are `hapi` and `express`. Defaults to `hapi`.
+- `--server <server>`, `-s <server>` determines the backend web server that will be used.
+  Supported backend web servers are `hapi` and `express`. Defaults to `hapi`.
 - `--host <host>`, `-h <host>` takes precedence over the `HOST` environment variable.
 - `--port <port>`, `-p <port>` takes precedence over the `PORT` environment variable.
 
@@ -223,7 +223,7 @@ module.exports = App => {
   return [
     get('/', { controller: 'index', action: 'index' }),
     get('details', { controller: 'index' }),
-    post('users', { controller: 'users', action: 'create '}),
+    post('users', { controller: 'users', action: 'create' }),
     get('users/:userId', { controller: 'users', action: 'show' }),
   ];
 };
@@ -316,8 +316,8 @@ module.exports = App => class extends App.Controller {
   static $setup() {
     // @NOTE: reports unhandled exceptions to rollbar
     this.$rescueFrom(async function(err) {
-      rollbar.error(err);
-      throw err;
+      await rollbar.error(this.$request, err);
+      throw err; // @NOTE: continue normal processing
     });
   }
 };
@@ -326,7 +326,7 @@ module.exports = App => class extends App.Controller {
 // controllers/application.js
 module.exports = App => class extends App.Controller {
   static $setup() {
-    // @NOTE: logs every action with time and response information
+    // @NOTE: logs every successful action with time information
     this.$aroundAction(async function(delegate) {
       const name = `${this.$controller}:${this.$action}`;
       const start = new Date();
@@ -334,13 +334,10 @@ module.exports = App => class extends App.Controller {
         const response = await delegate(); // @NOTE: run the action (or other hooks)
         const end = new Date();
         const timestamp = end.toISOString();
-        console.log(`[${timestamp}] ${name} succeeded in ${end - start}ms`);
+        console.log(`[${timestamp}] ${name} took ${end - start}ms`);
         return response; // @NOTE: continue normal processing
       }
       catch (err) {
-        const end = new Date();
-        const timestamp = end.toISOString();
-        console.error(`[${timestamp}] ${name} failed in ${end - start}ms: ${err.message}`);
         throw err; // @NOTE: continue normal processing
       }
     });
@@ -442,3 +439,13 @@ This is an optional feature, and needs to be enabled with `secrets: true` in the
 Load value from the client session.
 
 Full signature: `async (key: String) -> Any`.
+
+### `$clear`
+
+::: tip
+This is an optional feature, and needs to be enabled with `secrets: true` in the feature config.
+:::
+
+Clear value from the client session.
+
+Full signature: `async (key: String) -> Null`.
