@@ -102,7 +102,7 @@ module.exports = class Rares {
         const loaderDeps = {};
         const virtualModules = {};
 
-        App.Register = (moduleName, module, opts) => {
+        App.register = (moduleName, module, opts) => {
           virtualModules[moduleName] = module;
         };
 
@@ -293,7 +293,7 @@ module.exports = class Rares {
       },
       // == @SECTION: routes == //
       async App => {
-        App.Register('#/route-index', App => {
+        App.register('#/route-index', App => {
           // @TODO: Do this only in dev mode
           const routes = App.load('config/routes');
 
